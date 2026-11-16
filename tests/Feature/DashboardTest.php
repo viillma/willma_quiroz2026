@@ -1,25 +1,44 @@
 <?php
 
-use App\Models\Role;
 use App\Models\User;
 use Database\Seeders\PermissionsSeeder;
 
+beforeEach(fn () => $this->seed(PermissionsSeeder::class));
+
 test('guests are redirected to the login page', function () {
-    $response = $this->get('/some-team/dashboard');
-    $response->assertRedirect(route('login'));
+    $this->get(route('dashboard'))->assertRedirect(route('login'));
 });
 
-test('authenticated users can visit the dashboard', function () {
-    $this->seed(PermissionsSeeder::class);
+test('active administrators can visit the dashboard', function () {
+    $user = User::factory()->admin()->create();
 
-    $user = User::factory()->create();
-    $role = Role::where('nombre', 'asistente')->first();
-    $user->roles()->sync([$role->id]);
-    $team = $user->currentTeam;
+    $this->actingAs($user)->get(route('dashboard'))->assertOk();
+});
 
-    $response = $this
-        ->actingAs($user)
-        ->get(route('dashboard', ['current_team' => $team]));
+test('active recepcionistas can visit the dashboard', function () {
+    $user = User::factory()->recepcionista()->create();
 
-    $response->assertOk();
+    $this->actingAs($user)->get(route('dashboard'))->assertOk();
+});
+
+test('active disenadores can visit the dashboard', function () {
+    $user = User::factory()->disenador()->create();
+
+    $this->actingAs($user)->get(route('dashboard'))->assertOk();
+});
+
+test('pending users are logged out and redirected to the login page', function () {
+    $user = User::factory()->admin()->pending()->create();
+
+    $this->actingAs($user)->get(route('dashboard'))->assertRedirect(route('login'));
+
+    $this->assertGuest();
+});
+
+test('suspended users are logged out and redirected to the login page', function () {
+    $user = User::factory()->recepcionista()->suspended()->create();
+
+    $this->actingAs($user)->get(route('dashboard'))->assertRedirect(route('login'));
+
+    $this->assertGuest();
 });

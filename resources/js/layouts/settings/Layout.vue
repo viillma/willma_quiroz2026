@@ -8,7 +8,6 @@ import { toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editProfile } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security';
-import { index as teams } from '@/routes/teams';
 import type { NavItem } from '@/types';
 
 const sidebarNavItems: NavItem[] = [
@@ -19,10 +18,6 @@ const sidebarNavItems: NavItem[] = [
     {
         title: 'Security',
         href: editSecurity(),
-    },
-    {
-        title: 'Teams',
-        href: teams(),
     },
     {
         title: 'Appearance',
@@ -51,8 +46,12 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
                         :key="toUrl(item.href)"
                         variant="ghost"
                         :class="[
-                            'w-full justify-start text-white/70 hover:text-white hover:bg-white/10',
-                            { 'bg-white/10 text-white': isCurrentOrParentUrl(item.href) },
+                            'w-full justify-start text-ink/65 hover:bg-blush/40 hover:text-ink',
+                            {
+                                'bg-blush/50 text-ink': isCurrentOrParentUrl(
+                                    item.href,
+                                ),
+                            },
                         ]"
                         as-child
                     >
@@ -64,7 +63,7 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
                 </nav>
             </aside>
 
-            <Separator class="my-6 lg:hidden bg-white/10" />
+            <Separator class="my-6 bg-ink/10 lg:hidden" />
 
             <div class="flex-1 md:max-w-2xl">
                 <section class="max-w-xl space-y-6">

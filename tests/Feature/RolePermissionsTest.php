@@ -9,123 +9,117 @@ beforeEach(fn () => $this->seed(PermissionsSeeder::class));
 
 function userWithRole(string $roleName): User
 {
-    $user = User::factory()->create(['role' => $roleName]);
     $role = Role::where('nombre', $roleName)->firstOrFail();
-    $user->roles()->sync([$role->id]);
 
-    return $user->fresh();
+    return User::factory()->create(['role_id' => $role->id]);
 }
 
-test('administrador can access dashboard', function () {
-    $user = userWithRole('administrador');
-    $team = $user->currentTeam;
+test('administrador can access the dashboard', function () {
+    $user = userWithRole(Role::ADMINISTRADOR);
 
-    $response = $this->actingAs($user)->get("/{$team->slug}/dashboard");
-
-    $response->assertOk();
+    $this->actingAs($user)->get(route('dashboard'))->assertOk();
 });
 
 test('administrador is identified as admin', function () {
-    $user = userWithRole('administrador');
+    $user = userWithRole(Role::ADMINISTRADOR);
 
     expect($user->isAdmin())->toBeTrue();
 });
 
 test('administrador has all permissions', function () {
-    $user = userWithRole('administrador');
+    $user = userWithRole(Role::ADMINISTRADOR);
 
     expect($user->hasPermission(Permission::PanelVer->value))->toBeTrue();
     expect($user->hasPermission(Permission::ClientesGestionar->value))->toBeTrue();
     expect($user->hasPermission(Permission::ServiciosGestionar->value))->toBeTrue();
-    expect($user->hasPermission(Permission::ProyectosGestionar->value))->toBeTrue();
     expect($user->hasPermission(Permission::UsuariosGestionar->value))->toBeTrue();
     expect($user->hasPermission(Permission::ConfiguracionGestionar->value))->toBeTrue();
+    expect($user->hasPermission(Permission::CatalogoEliminar->value))->toBeTrue();
+    expect($user->hasPermission(Permission::WebGestionar->value))->toBeTrue();
 });
 
-test('asistente can access dashboard', function () {
-    $user = userWithRole('asistente');
-    $team = $user->currentTeam;
+test('recepcionista can access the dashboard', function () {
+    $user = userWithRole(Role::RECEPCIONISTA);
 
-    $response = $this->actingAs($user)->get("/{$team->slug}/dashboard");
-
-    $response->assertOk();
+    $this->actingAs($user)->get(route('dashboard'))->assertOk();
 });
 
-test('asistente can access servicios management', function () {
-    $user = userWithRole('asistente');
-    $team = $user->currentTeam;
-
-    $response = $this->actingAs($user)->get("/{$team->slug}/servicios/create");
-
-    $response->assertOk();
-});
-
-test('asistente cannot manage users', function () {
-    $user = userWithRole('asistente');
-
-    expect($user->hasPermission(Permission::UsuariosGestionar->value))->toBeFalse();
-});
-
-test('asistente has basic permissions', function () {
-    $user = userWithRole('asistente');
+test('recepcionista has front desk permissions', function () {
+    $user = userWithRole(Role::RECEPCIONISTA);
 
     expect($user->hasPermission(Permission::PanelVer->value))->toBeTrue();
     expect($user->hasPermission(Permission::ClientesVer->value))->toBeTrue();
     expect($user->hasPermission(Permission::ClientesGestionar->value))->toBeTrue();
     expect($user->hasPermission(Permission::ServiciosVer->value))->toBeTrue();
+    expect($user->hasPermission(Permission::PedidosVer->value))->toBeTrue();
+    expect($user->hasPermission(Permission::PedidosGestionar->value))->toBeTrue();
     expect($user->hasPermission(Permission::CotizacionesVer->value))->toBeTrue();
     expect($user->hasPermission(Permission::CotizacionesGestionar->value))->toBeTrue();
-    expect($user->hasPermission(Permission::ReportesVer->value))->toBeTrue();
+    expect($user->hasPermission(Permission::PagosVer->value))->toBeTrue();
+    expect($user->hasPermission(Permission::CatalogoVer->value))->toBeTrue();
 });
 
-test('asistente lacks advanced permissions', function () {
-    $user = userWithRole('asistente');
+test('recepcionista lacks advanced permissions', function () {
+    $user = userWithRole(Role::RECEPCIONISTA);
 
-    expect($user->hasPermission(Permission::ProyectosVer->value))->toBeFalse();
+    expect($user->hasPermission(Permission::ServiciosGestionar->value))->toBeFalse();
     expect($user->hasPermission(Permission::DiseñosVer->value))->toBeFalse();
+    expect($user->hasPermission(Permission::ReportesVer->value))->toBeFalse();
     expect($user->hasPermission(Permission::ReportesFinancieros->value))->toBeFalse();
+    expect($user->hasPermission(Permission::UsuariosGestionar->value))->toBeFalse();
     expect($user->hasPermission(Permission::ConfiguracionGestionar->value))->toBeFalse();
 });
 
+test('recepcionista cannot manage users', function () {
+    $user = userWithRole(Role::RECEPCIONISTA);
+
+    $this->actingAs($user)->get(route('usuarios.index'))->assertForbidden();
+});
+
+test('recepcionista cannot access reports', function () {
+    $user = userWithRole(Role::RECEPCIONISTA);
+
+    $this->actingAs($user)->get(route('reportes.index'))->assertForbidden();
+});
+
 test('disenador has design permissions', function () {
-    $user = userWithRole('disenador');
+    $user = userWithRole(Role::DISENADOR);
 
     expect($user->hasPermission(Permission::PanelVer->value))->toBeTrue();
     expect($user->hasPermission(Permission::ClientesVer->value))->toBeTrue();
     expect($user->hasPermission(Permission::ServiciosVer->value))->toBeTrue();
-    expect($user->hasPermission(Permission::ProyectosVer->value))->toBeTrue();
-    expect($user->hasPermission(Permission::ProyectosGestionar->value))->toBeTrue();
-    expect($user->hasPermission(Permission::CotizacionesVer->value))->toBeTrue();
+    expect($user->hasPermission(Permission::PedidosVer->value))->toBeTrue();
     expect($user->hasPermission(Permission::DiseñosVer->value))->toBeTrue();
     expect($user->hasPermission(Permission::DiseñosGestionar->value))->toBeTrue();
-    expect($user->hasPermission(Permission::ReportesVer->value))->toBeTrue();
+    expect($user->hasPermission(Permission::DiseñosAprobar->value))->toBeTrue();
+    expect($user->hasPermission(Permission::CatalogoVer->value))->toBeTrue();
 });
 
-test('disenador cannot manage users or configuration', function () {
-    $user = userWithRole('disenador');
+test('disenador cannot manage users, money or configuration', function () {
+    $user = userWithRole(Role::DISENADOR);
 
+    expect($user->hasPermission(Permission::ClientesGestionar->value))->toBeFalse();
+    expect($user->hasPermission(Permission::PedidosGestionar->value))->toBeFalse();
+    expect($user->hasPermission(Permission::PagosVer->value))->toBeFalse();
+    expect($user->hasPermission(Permission::ReportesVer->value))->toBeFalse();
     expect($user->hasPermission(Permission::UsuariosGestionar->value))->toBeFalse();
     expect($user->hasPermission(Permission::ConfiguracionGestionar->value))->toBeFalse();
-    expect($user->hasPermission(Permission::ReportesFinancieros->value))->toBeFalse();
 });
 
-test('disenador can manage servicios', function () {
-    $user = userWithRole('disenador');
-    $team = $user->currentTeam;
+test('disenador can access the dashboard', function () {
+    $user = userWithRole(Role::DISENADOR);
 
-    $response = $this->actingAs($user)->get("/{$team->slug}/servicios/create");
-
-    $response->assertOk();
+    $this->actingAs($user)->get(route('dashboard'))->assertOk();
 });
 
-test('rolesNombres returns correct roles', function () {
-    $user = userWithRole('administrador');
+test('rolesNombres returns the assigned role', function () {
+    $user = userWithRole(Role::ADMINISTRADOR);
 
-    expect($user->rolesNombres())->toContain('administrador');
+    expect($user->rolesNombres())->toBe([Role::ADMINISTRADOR]);
 });
 
 test('permissionsNombres returns all permissions for administrador', function () {
-    $user = userWithRole('administrador');
+    $user = userWithRole(Role::ADMINISTRADOR);
     $permissions = $user->permissionsNombres();
 
     expect($permissions)->toContain(Permission::ClientesGestionar->value);
@@ -133,11 +127,20 @@ test('permissionsNombres returns all permissions for administrador', function ()
     expect($permissions)->toContain(Permission::UsuariosGestionar->value);
 });
 
-test('permissionsNombres returns limited permissions for asistente', function () {
-    $user = userWithRole('asistente');
+test('permissionsNombres returns limited permissions for recepcionista', function () {
+    $user = userWithRole(Role::RECEPCIONISTA);
     $permissions = $user->permissionsNombres();
 
     expect($permissions)->toContain(Permission::ClientesGestionar->value);
-    expect($permissions)->toContain(Permission::ServiciosGestionar->value);
+    expect($permissions)->toContain(Permission::PedidosGestionar->value);
     expect($permissions)->not->toContain(Permission::UsuariosGestionar->value);
+});
+
+test('assignRole replaces the current role', function () {
+    $user = userWithRole(Role::RECEPCIONISTA);
+
+    $user->assignRole(Role::DISENADOR);
+
+    expect($user->fresh()->role?->nombre)->toBe(Role::DISENADOR);
+    expect($user->fresh()->hasRole(Role::DISENADOR))->toBeTrue();
 });

@@ -26,24 +26,18 @@ class PermissionsSeeder extends Seeder
             ['descripcion' => 'Administrador con acceso total al sistema']
         );
 
-        $disenadorRole = Role::updateOrCreate(
-            ['nombre' => Role::DISENADOR],
-            ['descripcion' => 'Diseñador con permisos de diseño y proyectos']
-        );
-
-        $asistenteRole = Role::updateOrCreate(
-            ['nombre' => Role::ASISTENTE],
-            ['descripcion' => 'Asistente con permisos de operación diaria']
-        );
-
         $recepcionistaRole = Role::updateOrCreate(
             ['nombre' => Role::RECEPCIONISTA],
-            ['descripcion' => 'Recepcionista encargado de atención al cliente y operación diaria']
+            ['descripcion' => 'Recepción: clientes, pedidos, cotizaciones y seguimiento']
+        );
+
+        $disenadorRole = Role::updateOrCreate(
+            ['nombre' => Role::DISENADOR],
+            ['descripcion' => 'Diseñador: pedidos asignados, diseños y archivos']
         );
 
         $adminRole->syncPermissionsByName(Permission::valuesForAdministrador());
-        $disenadorRole->syncPermissionsByName(Permission::valuesForDisenador());
-        $asistenteRole->syncPermissionsByName(Permission::valuesForAsistente());
         $recepcionistaRole->syncPermissionsByName(Permission::valuesForRecepcionista());
+        $disenadorRole->syncPermissionsByName(Permission::valuesForDisenador());
     }
 }

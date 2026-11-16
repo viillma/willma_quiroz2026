@@ -16,7 +16,8 @@ class PaymentFormRequest extends FormRequest
     {
         return [
             'amount' => ['required', 'numeric', 'min:0.01'],
-            'payment_method' => ['required', Rule::in(['efectivo', 'transferencia', 'yape', 'plin'])],
+            'payment_method' => ['required', Rule::in(['efectivo', 'qr', 'transferencia', 'tarjeta', 'otro'])],
+            'tipo_pago' => ['nullable', Rule::in(['adelanto', 'pago_parcial', 'pago_total'])],
             'reference' => ['nullable', 'string', 'max:255'],
         ];
     }

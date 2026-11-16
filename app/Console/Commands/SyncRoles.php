@@ -2,38 +2,32 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\Permission;
 use App\Models\Role;
-use App\Models\User;
-use Database\Seeders\PermissionsSeeder;
 use Illuminate\Console\Command;
 
 class SyncRoles extends Command
 {
     protected $signature = 'app:sync-roles';
 
-    protected $description = 'Sync permissions and legacy user roles';
+    protected $description = 'Sync the default roles and their permissions';
 
     public function handle(): void
     {
-        $this->call(PermissionsSeeder::class, ['--class' => 'Database\\Seeders\\PermissionsSeeder']);
+        foreach (Permission::byRole() as $roleName => $permissions) {
+            $role = Role::where('nombre', $roleName)->first();
 
-        $bar = $this->output->createProgressBar(User::count());
-        $bar->start();
+            if (! $role) {
+                $this->warn("Rol '{$roleName}' no encontrado, se omite.");
 
-        foreach (User::lazy() as $user) {
-            if ($user->role && ! $user->roles()->exists()) {
-                $role = Role::where('nombre', $user->role)->first();
-                if ($role) {
-                    $user->roles()->syncWithoutDetaching([$role->id]);
-                }
+                continue;
             }
-            $user->ensureRolesHavePermissions();
-            $bar->advance();
+
+            $role->syncPermissionsByName($permissions);
+
+            $this->line("Rol '{$roleName}' sincronizado (".count($permissions).' permisos).');
         }
 
-        $bar->finish();
-
-        $this->newLine();
-        $this->info('Roles and permissions synced successfully.');
+        $this->info('Roles y permisos sincronizados correctamente.');
     }
 }

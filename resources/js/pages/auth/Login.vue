@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-vue-next';
+import { Mail, Lock, ArrowRight } from 'lucide-vue-next';
 
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
@@ -34,14 +33,27 @@ defineProps<{
 
     <div class="animate-fade-in space-y-6">
         <!-- Status message -->
-        <div v-if="status" class="animate-slide-up rounded-xl bg-green-500/10 p-4 text-center text-sm font-medium text-green-400 ring-1 ring-green-500/20">
+        <div
+            v-if="status"
+            class="animate-slide-up rounded-xl bg-mint/50 p-4 text-center text-sm font-semibold text-[#17805a] ring-1 ring-mint"
+        >
             {{ status }}
         </div>
 
         <!-- Title inside card -->
         <div class="animate-slide-up text-center">
-            <h1 class="text-2xl font-bold text-white">Iniciar Sesión</h1>
-            <p class="mt-2 text-sm text-white/60">Ingresa tus credenciales para continuar</p>
+            <span
+                class="text-[11px] font-bold tracking-[0.2em] text-pix uppercase"
+                >Bienvenido de nuevo</span
+            >
+            <h1
+                class="mt-3 font-display text-3xl font-extrabold tracking-tight text-ink"
+            >
+                Iniciar Sesión
+            </h1>
+            <p class="mt-2 text-sm text-ink/55">
+                Ingresa tus credenciales para continuar
+            </p>
         </div>
 
         <Form
@@ -52,12 +64,14 @@ defineProps<{
         >
             <!-- Email -->
             <div class="space-y-2">
-                <Label for="email" class="text-sm font-medium text-white/80">
+                <Label for="email" class="text-sm font-semibold text-ink/80">
                     Correo electrónico
                 </Label>
                 <div class="relative">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                        <Mail class="h-4 w-4 text-white/40" />
+                    <div
+                        class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5"
+                    >
+                        <Mail class="h-4 w-4 text-ink/35" />
                     </div>
                     <Input
                         id="email"
@@ -68,7 +82,7 @@ defineProps<{
                         autocomplete="email"
                         placeholder="tu@correo.com"
                         :tabindex="1"
-                        class="pl-10 h-11 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-white/40 transition-all duration-200 focus:bg-white/10 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+                        class="h-11 rounded-xl border-ink/10 bg-warm pl-10 text-ink transition-all duration-200 placeholder:text-ink/35 focus:border-pix/40 focus:bg-white focus:ring-pix/20"
                     />
                 </div>
                 <InputError :message="errors.email" />
@@ -77,21 +91,26 @@ defineProps<{
             <!-- Password -->
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
-                    <Label for="password" class="text-sm font-medium text-white/80">
+                    <Label
+                        for="password"
+                        class="text-sm font-semibold text-ink/80"
+                    >
                         Contraseña
                     </Label>
                     <TextLink
                         v-if="canResetPassword"
                         :href="request()"
-                        class="text-xs font-medium text-blue-400 hover:text-purple-400 transition-colors"
+                        class="text-xs font-semibold text-pix transition-colors hover:text-pix-2"
                         :tabindex="5"
                     >
                         ¿Olvidaste tu contraseña?
                     </TextLink>
                 </div>
                 <div class="relative">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                        <Lock class="h-4 w-4 text-white/40" />
+                    <div
+                        class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5"
+                    >
+                        <Lock class="h-4 w-4 text-ink/35" />
                     </div>
                     <PasswordInput
                         id="password"
@@ -100,7 +119,7 @@ defineProps<{
                         autocomplete="current-password"
                         placeholder="Tu contraseña"
                         :tabindex="2"
-                        class="pl-10 h-11 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-white/40 transition-all duration-200 focus:bg-white/10 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+                        class="h-11 rounded-xl border-ink/10 bg-warm pl-10 text-ink transition-all duration-200 placeholder:text-ink/35 focus:border-pix/40 focus:bg-white focus:ring-pix/20"
                     />
                 </div>
                 <InputError :message="errors.password" />
@@ -110,13 +129,13 @@ defineProps<{
             <div class="flex items-center">
                 <Label
                     for="remember"
-                    class="flex cursor-pointer items-center gap-3 text-sm text-white/70"
+                    class="flex cursor-pointer items-center gap-3 text-sm font-medium text-ink/65"
                 >
                     <Checkbox
                         id="remember"
                         name="remember"
                         :tabindex="3"
-                        class="data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 border-white/20"
+                        class="border-ink/20 data-[state=checked]:border-pix data-[state=checked]:bg-pix"
                     />
                     <span>Recordar sesión</span>
                 </Label>
@@ -128,16 +147,28 @@ defineProps<{
                 :disabled="processing"
                 :tabindex="4"
                 data-test="login-button"
-                class="btn-gradient-blue btn-shimmer w-full h-12 text-base font-semibold"
+                class="group h-12 w-full rounded-xl bg-pix text-base font-bold text-white shadow-lg shadow-pix/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-pix-2 hover:shadow-xl hover:shadow-pix/30"
             >
                 <span class="flex items-center justify-center gap-2">
                     <Spinner v-if="processing" class="h-5 w-5 text-white" />
                     <template v-else>
                         Iniciar Sesión
-                        <ArrowRight class="h-4 w-4" />
+                        <ArrowRight
+                            class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                        />
                     </template>
                 </span>
             </Button>
         </Form>
+
+        <p class="mt-2 text-center text-sm text-ink/45">
+            ¿No tienes cuenta?
+            <a
+                href="/register"
+                class="font-bold text-pix transition-colors hover:text-pix-2"
+            >
+                Registrarse
+            </a>
+        </p>
     </div>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
+
 import GlobalBackground from '@/components/GlobalBackground.vue';
 import { home } from '@/routes';
 
@@ -11,119 +11,195 @@ defineProps<{
 </script>
 
 <template>
-    <div class="flex min-h-screen">
+    <div class="flex min-h-screen overflow-hidden bg-cream">
         <!-- Left Panel: Brand & Design -->
-        <div class="relative hidden w-[55%] overflow-hidden lg:flex lg:flex-col bg-gradient-to-br from-[#2563EB] via-[#7C3AED] to-[#EC4899]">
-            <!-- Animated gradient orbs -->
-            <div class="absolute inset-0 overflow-hidden">
-                <div class="absolute -left-20 -top-20 h-[500px] w-[500px] animate-pulse rounded-full bg-white/5 blur-3xl" style="animation-duration: 4s;" />
-                <div class="absolute -bottom-32 -right-20 h-[600px] w-[600px] animate-pulse rounded-full bg-[#F97316]/15 blur-3xl" style="animation-duration: 6s; animation-delay: 1s;" />
-                <div class="absolute left-1/3 top-1/3 h-80 w-80 animate-pulse rounded-full bg-[#FACC15]/10 blur-3xl" style="animation-duration: 5s; animation-delay: 2s;" />
-                <div class="absolute bottom-1/4 left-1/4 h-48 w-48 animate-pulse rounded-full bg-white/5 blur-2xl" style="animation-duration: 7s; animation-delay: 0.5s;" />
+        <div
+            class="relative hidden w-[55%] overflow-hidden lg:flex lg:flex-col"
+        >
+            <!-- Pastel background -->
+            <div class="absolute inset-0 bg-[#FFFDFB]">
+                <div
+                    class="absolute -top-32 -left-32 h-[520px] w-[520px] rounded-full bg-blush/60 blur-3xl"
+                ></div>
+                <div
+                    class="absolute top-[15%] -right-20 h-[460px] w-[460px] rounded-full bg-lilac/50 blur-3xl"
+                ></div>
+                <div
+                    class="absolute bottom-[-10%] left-[25%] h-[420px] w-[420px] rounded-full bg-peach/50 blur-3xl"
+                ></div>
+                <div
+                    class="absolute right-[12%] bottom-[15%] h-[300px] w-[300px] rounded-full bg-mint/60 blur-3xl"
+                ></div>
             </div>
 
-            <!-- Decorative geometric shapes -->
-            <div class="absolute inset-0 overflow-hidden opacity-20">
-                <svg class="absolute right-10 top-20 h-32 w-32 text-white" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
-                    <circle cx="50" cy="50" r="45" />
-                    <path d="M50 5L50 95M5 50L95 50" />
+            <!-- Decorative shapes -->
+            <div class="pointer-events-none absolute inset-0 opacity-30">
+                <svg
+                    class="absolute top-24 right-12 h-28 w-28 text-pix/40"
+                    viewBox="0 0 100 100"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.2"
+                >
+                    <circle cx="50" cy="50" r="44" />
+                    <path d="M50 6L50 94M6 50L94 50" />
                 </svg>
-                <svg class="absolute bottom-32 left-10 h-24 w-24 text-white" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+                <svg
+                    class="absolute bottom-36 left-10 h-20 w-20 text-lilac"
+                    viewBox="0 0 100 100"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.2"
+                >
                     <polygon points="50,5 95,90 5,90" />
                 </svg>
-                <svg class="absolute right-1/3 top-1/2 h-20 w-20 text-white" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
-                    <rect x="10" y="10" width="80" height="80" rx="10" />
+                <svg
+                    class="absolute top-1/2 left-1/3 h-16 w-16 text-peach/70"
+                    viewBox="0 0 100 100"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.2"
+                >
+                    <rect x="12" y="12" width="76" height="76" rx="18" />
                 </svg>
             </div>
 
             <!-- Content -->
-            <div class="relative z-10 flex h-full flex-col justify-between p-16">
+            <div
+                class="relative z-10 flex h-full flex-col justify-between p-14 xl:p-16"
+            >
                 <!-- Logo -->
-                <Link :href="home()" class="flex items-center gap-3 text-white">
-                    <AppLogoIcon class="h-11 w-11" />
-                    <span class="text-2xl font-bold tracking-tight">ServicioDigital</span>
+                <Link :href="home()" class="flex w-fit items-center gap-3">
+                    <span
+                        class="flex h-11 w-11 items-center justify-center rounded-2xl bg-ink font-display text-xl font-extrabold text-cream"
+                    >
+                        C<span class="text-pix">.</span>
+                    </span>
+                    <span
+                        class="font-display text-2xl font-extrabold tracking-tight text-ink"
+                    >
+                        CREAPIX<span class="text-pix">.</span>
+                    </span>
                 </Link>
 
                 <!-- Center content -->
-                <div class="space-y-8">
-                    <div class="space-y-4">
-                        <h1 class="text-5xl font-bold leading-tight text-white">
-                            {{ title || 'Diseño Gráfico<br>Profesional' }}
+                <div class="space-y-10">
+                    <div class="space-y-5">
+                        <h1
+                            class="font-display text-5xl leading-[1.05] font-extrabold tracking-tight text-ink"
+                        >
+                            {{ title || 'Diseño Gráfico<br />Profesional' }}
                         </h1>
-                        <p class="max-w-md text-lg text-white/75">
-                            {{ description || 'Soluciones creativas para tu marca: logotipos, banners, tarjetas, fotografía y más.' }}
+                        <p class="max-w-md text-lg leading-relaxed text-ink/55">
+                            {{
+                                description ||
+                                'Estrategia, creatividad y diseño para marcas que inspiran, conectan y venden.'
+                            }}
                         </p>
                     </div>
 
-                    <!-- Design service icons row -->
-                    <div class="flex flex-wrap gap-6">
-                        <div class="flex flex-col items-center gap-2 text-white/80">
-                            <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                            </svg>
-                            <span class="text-xs">Logotipos</span>
+                    <!-- Creative composition -->
+                    <div class="relative h-56 max-w-lg">
+                        <div
+                            class="absolute top-0 right-4 w-40 rounded-2xl bg-white p-4 shadow-xl shadow-ink/10"
+                            style="transform: rotate(3deg)"
+                        >
+                            <span
+                                class="text-[10px] font-bold tracking-[0.2em] text-ink/40 uppercase"
+                                >Paleta</span
+                            >
+                            <div class="mt-2.5 flex gap-1.5">
+                                <span class="h-8 w-8 rounded-lg bg-pix"></span>
+                                <span
+                                    class="h-8 w-8 rounded-lg bg-lilac"
+                                ></span>
+                                <span class="h-8 w-8 rounded-lg bg-mint"></span>
+                                <span
+                                    class="h-8 w-8 rounded-lg bg-peach"
+                                ></span>
+                            </div>
                         </div>
-                        <div class="flex flex-col items-center gap-2 text-white/80">
-                            <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M15 8h.01M3 6a3 3 0 013-3h12a3 3 0 013 3v12a3 3 0 01-3 3H6a3 3 0 01-3-3V6z" />
-                                <path d="M3 16l5-5c.928-.893 2.072-.893 3 0l5 5" />
-                                <path d="M14 14l1-1c.928-.893 2.072-.893 3 0l3 3" />
-                            </svg>
-                            <span class="text-xs">Fotografía</span>
+                        <div
+                            class="absolute bottom-0 left-0 w-52 rounded-2xl bg-white p-5 shadow-xl shadow-ink/10"
+                            style="transform: rotate(-4deg)"
+                        >
+                            <span
+                                class="font-display text-2xl font-extrabold text-ink"
+                                >CREAPIX<span class="text-pix">.</span></span
+                            >
+                            <div
+                                class="mt-3 h-1.5 w-24 rounded-full bg-ink/10"
+                            ></div>
+                            <div
+                                class="mt-1.5 h-1.5 w-32 rounded-full bg-ink/5"
+                            ></div>
                         </div>
-                        <div class="flex flex-col items-center gap-2 text-white/80">
-                            <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M12 20h9" />
-                                <path d="M16.376 3.622a1 1 0 013.002 3.002L7.368 18.635a2 2 0 01-.855.506l-2.872.838a.5.5 0 01-.62-.62l.838-2.872a2 2 0 01.506-.854z" />
+                        <span
+                            class="absolute top-6 left-1/2 h-20 w-20 rounded-full bg-pix text-cream shadow-lg shadow-pix/30"
+                            style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            "
+                        >
+                            <svg
+                                class="h-8 w-8"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <path d="M12 2L2 7l10 5 10-5-10-5z" />
                             </svg>
-                            <span class="text-xs">Edición</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-2 text-white/80">
-                            <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <rect x="3" y="3" width="18" height="18" rx="2" />
-                                <path d="M3 9h18" />
-                                <path d="M9 21V9" />
-                            </svg>
-                            <span class="text-xs">Banners</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-2 text-white/80">
-                            <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M4 7V4h16v3" />
-                                <path d="M9 20h6" />
-                                <path d="M12 4v16" />
-                            </svg>
-                            <span class="text-xs">Tarjetas</span>
-                        </div>
+                        </span>
                     </div>
                 </div>
 
                 <!-- Footer -->
-                <div class="text-sm text-white/50">
-                    &copy; {{ new Date().getFullYear() }} ServicioDigital. Todos los derechos reservados.
+                <div class="text-sm font-medium text-ink/40">
+                    &copy; {{ new Date().getFullYear() }} CREAPIX. Estudio
+                    creativo.
                 </div>
             </div>
         </div>
 
         <!-- Right Panel: Auth Form -->
-        <div class="relative flex flex-1 items-center justify-center p-4 lg:p-8">
+        <div
+            class="relative flex flex-1 items-center justify-center p-4 lg:p-8"
+        >
             <GlobalBackground />
             <div class="relative z-10 w-full max-w-md">
                 <!-- Mobile logo -->
-                <div class="mb-8 flex flex-col items-center justify-center lg:hidden">
+                <div
+                    class="mb-8 flex flex-col items-center justify-center lg:hidden"
+                >
                     <Link :href="home()" class="flex items-center gap-2">
-                        <AppLogoIcon class="h-9 w-9 text-white" />
-                        <span class="text-xl font-bold text-white">ServicioDigital</span>
+                        <span
+                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-ink font-display text-lg font-extrabold text-cream"
+                        >
+                            C<span class="text-pix">.</span>
+                        </span>
+                        <span
+                            class="font-display text-xl font-extrabold tracking-tight text-ink"
+                        >
+                            CREAPIX<span class="text-pix">.</span>
+                        </span>
                     </Link>
                 </div>
 
-                <!-- Glassmorphism card -->
-                <div class="glass-card rounded-2xl p-8 max-w-md w-full lg:p-10">
+                <!-- Card -->
+                <div
+                    class="w-full rounded-[28px] border border-ink/5 bg-white/90 p-8 shadow-[0_24px_60px_-24px_rgba(23,26,43,0.25)] backdrop-blur-xl lg:p-10"
+                >
                     <slot />
                 </div>
 
                 <!-- Mobile footer -->
-                <div class="mt-6 text-center text-xs text-white/40 lg:hidden">
-                    &copy; {{ new Date().getFullYear() }} ServicioDigital
+                <div
+                    class="mt-6 text-center text-xs font-medium text-ink/40 lg:hidden"
+                >
+                    &copy; {{ new Date().getFullYear() }} CREAPIX. Estudio
+                    creativo.
                 </div>
             </div>
         </div>

@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Enums\TeamRole;
-use App\Models\Team;
+use App\Enums\UserStatus;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -29,8 +29,10 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
+            'phone' => null,
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'status' => UserStatus::Activo,
             'remember_token' => Str::random(10),
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
@@ -38,22 +40,33 @@ class UserFactory extends Factory
         ];
     }
 
-    /**
-     * Configure the model factory.
-     */
-    public function configure(): static
+    public function admin(): static
     {
-        return $this->afterCreating(function ($user) {
-            $team = Team::factory()->personal()->create([
-                'name' => $user->name."'s Team",
-            ]);
+        return $this->withRole(Role::ADMINISTRADOR);
+    }
 
-            $team->members()->attach($user, [
-                'role' => TeamRole::Owner->value,
-            ]);
+    public function recepcionista(): static
+    {
+        return $this->withRole(Role::RECEPCIONISTA);
+    }
 
-            $user->switchTeam($team);
-        });
+    public function disenador(): static
+    {
+        return $this->withRole(Role::DISENADOR);
+    }
+
+    public function pending(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => UserStatus::Pendiente,
+        ]);
+    }
+
+    public function suspended(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => UserStatus::Suspendido,
+        ]);
     }
 
     /**
@@ -76,5 +89,12 @@ class UserFactory extends Factory
             'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-1'])),
             'two_factor_confirmed_at' => now(),
         ]);
+    }
+
+    protected function withRole(string $roleName): static
+    {
+        return $this->afterCreating(function (User $user) use ($roleName) {
+            $user->assignRole($roleName);
+        });
     }
 }

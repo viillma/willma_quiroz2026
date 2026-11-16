@@ -1,70 +1,151 @@
+<script setup lang="ts">
+import { onMounted, ref } from 'vue';
+
+const reduced = ref(false);
+
+onMounted(() => {
+    reduced.value = window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+    ).matches;
+});
+</script>
+
 <template>
-    <div class="fixed inset-0 z-0 pointer-events-none">
-        <!-- DEBUG: remove this after testing -->
-        <div class="fixed top-5 left-5 z-[9999] bg-red-600 px-4 py-2 text-sm font-bold text-white shadow-lg rounded-lg">
-            FONDO ACTIVO
-        </div>
-
-        <!-- Base dark color -->
-        <div class="absolute inset-0 bg-[#050916]" />
-
-        <!-- Massive animated gradient blobs with blur-3xl -->
+    <div class="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <!-- Warm beige/peach base -->
         <div
-            class="absolute -top-60 -left-40 h-[1100px] w-[1100px] rounded-full opacity-50 blur-3xl animate-pulse"
-            style="background: radial-gradient(circle, #7C3AED 0%, transparent 70%); animation-duration: 7s;"
-        />
-        <div
-            class="absolute -bottom-60 -right-40 h-[1200px] w-[1200px] rounded-full opacity-55 blur-3xl animate-pulse"
-            style="background: radial-gradient(circle, #3B82F6 0%, transparent 70%); animation-duration: 9s; animation-delay: 1.5s;"
-        />
-        <div
-            class="absolute top-1/4 left-1/3 h-[1000px] w-[1000px] -translate-x-1/2 rounded-full opacity-50 blur-3xl animate-pulse"
-            style="background: radial-gradient(circle, #EC4899 0%, transparent 70%); animation-duration: 8s; animation-delay: 2.5s;"
-        />
-        <div
-            class="absolute bottom-1/3 right-1/4 h-[1000px] w-[1000px] rounded-full opacity-50 blur-3xl animate-pulse"
-            style="background: radial-gradient(circle, #06B6D4 0%, transparent 70%); animation-duration: 10s; animation-delay: 0.8s;"
-        />
-        <div
-            class="absolute top-1/2 left-3/4 h-[900px] w-[900px] -translate-y-1/2 rounded-full opacity-45 blur-3xl animate-pulse"
-            style="background: radial-gradient(circle, #7C3AED 0%, transparent 70%); animation-duration: 6s; animation-delay: 3.5s;"
-        />
-        <div
-            class="absolute top-3/4 left-1/5 h-[800px] w-[800px] rounded-full opacity-40 blur-3xl animate-pulse"
-            style="background: radial-gradient(circle, #3B82F6 0%, transparent 70%); animation-duration: 11s; animation-delay: 4s;"
+            class="absolute inset-0 bg-gradient-to-br from-[#FBEFE4] via-[#F7EDF0] to-[#F3EDF7]"
         />
 
-        <!-- Subtle blur to blend the blobs -->
-        <div class="absolute inset-0 backdrop-blur-[100px]" />
+        <!-- Soft peach tint wash -->
+        <div
+            class="absolute inset-0 opacity-40"
+            style="
+                background: radial-gradient(
+                    ellipse at 20% 0%,
+                    rgba(255, 200, 214, 0.55) 0%,
+                    transparent 55%
+                );
+            "
+        />
+
+        <!-- Soft pastel orbs -->
+        <div
+            class="absolute -top-56 -left-40 h-[900px] w-[900px] rounded-full opacity-70 blur-3xl"
+            :class="reduced ? '' : 'animate-pulse'"
+            style="
+                background: radial-gradient(
+                    circle,
+                    #ffd6e5 0%,
+                    transparent 70%
+                );
+                animation-duration: 9s;
+            "
+        />
+        <div
+            class="absolute -right-40 -bottom-64 h-[1000px] w-[1000px] rounded-full opacity-70 blur-3xl"
+            :class="reduced ? '' : 'animate-pulse'"
+            style="
+                background: radial-gradient(
+                    circle,
+                    #dccbff 0%,
+                    transparent 70%
+                );
+                animation-duration: 11s;
+                animation-delay: 1.5s;
+            "
+        />
+        <div
+            class="absolute top-1/4 left-1/3 h-[900px] w-[900px] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
+            :class="reduced ? '' : 'animate-pulse'"
+            style="
+                background: radial-gradient(
+                    circle,
+                    #ede5ff 0%,
+                    transparent 70%
+                );
+                animation-duration: 10s;
+                animation-delay: 2.5s;
+            "
+        />
+        <div
+            class="absolute right-1/4 bottom-1/3 h-[900px] w-[900px] rounded-full opacity-65 blur-3xl"
+            :class="reduced ? '' : 'animate-pulse'"
+            style="
+                background: radial-gradient(
+                    circle,
+                    #ffd8c2 0%,
+                    transparent 70%
+                );
+                animation-duration: 12s;
+                animation-delay: 0.8s;
+            "
+        />
+        <div
+            class="absolute top-1/2 left-3/4 h-[800px] w-[800px] -translate-y-1/2 rounded-full opacity-60 blur-3xl"
+            :class="reduced ? '' : 'animate-pulse'"
+            style="
+                background: radial-gradient(
+                    circle,
+                    #d8f3e8 0%,
+                    transparent 70%
+                );
+                animation-duration: 8s;
+                animation-delay: 3.5s;
+            "
+        />
+        <div
+            class="absolute top-3/4 left-1/5 h-[700px] w-[700px] rounded-full opacity-40 blur-3xl"
+            :class="reduced ? '' : 'animate-pulse'"
+            style="
+                background: radial-gradient(
+                    circle,
+                    #fff7fa 0%,
+                    transparent 70%
+                );
+                animation-duration: 13s;
+                animation-delay: 4s;
+            "
+        />
 
         <!-- Subtle grid pattern -->
         <div
-            class="absolute inset-0 opacity-[0.04]"
-            style="background-image: linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px); background-size: 60px 60px;"
+            class="absolute inset-0 opacity-[0.035]"
+            style="
+                background-image:
+                    linear-gradient(
+                        rgba(23, 26, 43, 0.06) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        90deg,
+                        rgba(23, 26, 43, 0.06) 1px,
+                        transparent 1px
+                    );
+                background-size: 60px 60px;
+            "
         />
 
-        <!-- Floating glow dots -->
+        <!-- Floating pastel dots -->
         <div
-            class="absolute top-[15%] left-[30%] h-[4px] w-[4px] rounded-full"
-            style="background: #7C3AED; box-shadow: 0 0 12px #7C3AED, 0 0 40px rgba(124, 58, 237, 0.6); animation: float 4s ease-in-out infinite;"
+            class="absolute top-[15%] left-[30%] h-[5px] w-[5px] rounded-full"
+            :class="reduced ? '' : 'animate-float'"
+            style="background: #f43f7a; opacity: 0.35"
         />
         <div
-            class="absolute bottom-[25%] right-[25%] h-[4px] w-[4px] rounded-full"
-            style="background: #EC4899; box-shadow: 0 0 12px #EC4899, 0 0 40px rgba(236, 72, 153, 0.6); animation: float 5s ease-in-out infinite 1s;"
-        />
-
-        <!-- Neon lines -->
-        <div
-            class="absolute top-[15%] left-0 right-0 h-[1px] opacity-[0.15]"
-            style="background: linear-gradient(90deg, transparent 0%, #7C3AED 20%, #3B82F6 50%, #7C3AED 80%, transparent 100%); box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);"
+            class="absolute right-[25%] bottom-[25%] h-[5px] w-[5px] rounded-full"
+            :class="reduced ? '' : 'animate-float'"
+            style="background: #dccbff; opacity: 0.55; animation-delay: 1s"
         />
         <div
-            class="absolute bottom-[25%] left-0 right-0 h-[1px] opacity-[0.12]"
-            style="background: linear-gradient(90deg, transparent 0%, #EC4899 30%, #06B6D4 70%, transparent 100%); box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);"
+            class="absolute top-[55%] left-[12%] h-[4px] w-[4px] rounded-full"
+            :class="reduced ? '' : 'animate-float'"
+            style="background: #ffd8c2; opacity: 0.7; animation-delay: 0.5s"
         />
         <div
-            class="absolute top-[45%] left-0 right-0 h-[1px] opacity-[0.10]"
-            style="background: linear-gradient(90deg, transparent 0%, #3B82F6 40%, #06B6D4 60%, transparent 100%); box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);"
+            class="absolute top-[38%] right-[16%] h-[4px] w-[4px] rounded-full"
+            :class="reduced ? '' : 'animate-float'"
+            style="background: #d8f3e8; opacity: 0.9; animation-delay: 2s"
         />
     </div>
 </template>

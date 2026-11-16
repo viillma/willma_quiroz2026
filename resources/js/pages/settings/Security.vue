@@ -48,8 +48,8 @@ onUnmounted(() => clearTwoFactorAuthData());
 
     <h1 class="sr-only">Security settings</h1>
 
-    <div class="animate-fade-in p-4 md:p-6 lg:p-8 space-y-6 relative">
-        <div class="glass-card rounded-2xl p-6 space-y-6 animate-slide-up">
+    <div class="animate-fade-in relative space-y-6 p-4 md:p-6 lg:p-8">
+        <div class="glass-card animate-slide-up space-y-6 rounded-2xl p-6">
             <Heading
                 variant="small"
                 title="Update password"
@@ -75,7 +75,7 @@ onUnmounted(() => clearTwoFactorAuthData());
                     <PasswordInput
                         id="current_password"
                         name="current_password"
-                        class="mt-1 block w-full bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                        class="mt-1 block w-full border-ink/10 bg-ink/5 text-ink placeholder:text-ink/40"
                         autocomplete="current-password"
                         placeholder="Current password"
                     />
@@ -87,7 +87,7 @@ onUnmounted(() => clearTwoFactorAuthData());
                     <PasswordInput
                         id="password"
                         name="password"
-                        class="mt-1 block w-full bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                        class="mt-1 block w-full border-ink/10 bg-ink/5 text-ink placeholder:text-ink/40"
                         autocomplete="new-password"
                         placeholder="New password"
                     />
@@ -99,7 +99,7 @@ onUnmounted(() => clearTwoFactorAuthData());
                     <PasswordInput
                         id="password_confirmation"
                         name="password_confirmation"
-                        class="mt-1 block w-full bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                        class="mt-1 block w-full border-ink/10 bg-ink/5 text-ink placeholder:text-ink/40"
                         autocomplete="new-password"
                         placeholder="Confirm password"
                     />
@@ -118,68 +118,82 @@ onUnmounted(() => clearTwoFactorAuthData());
             </Form>
         </div>
 
-        <div v-if="canManageTwoFactor" class="glass-card rounded-2xl p-6 space-y-6 animate-slide-up">
-        <Heading
-            variant="small"
-            title="Two-factor authentication"
-            description="Manage your two-factor authentication settings"
-        />
-
         <div
-            v-if="!twoFactorEnabled"
-            class="flex flex-col items-start justify-start space-y-4"
+            v-if="canManageTwoFactor"
+            class="glass-card animate-slide-up space-y-6 rounded-2xl p-6"
         >
-            <p class="text-sm text-white/60">
-                When you enable two-factor authentication, you will be prompted
-                for a secure pin during login. This pin can be retrieved from a
-                TOTP-supported application on your phone.
-            </p>
+            <Heading
+                variant="small"
+                title="Two-factor authentication"
+                description="Manage your two-factor authentication settings"
+            />
 
-            <div>
-                <Button v-if="hasSetupData" @click="showSetupModal = true" class="btn-gradient-blue btn-shimmer">
-                    <ShieldCheck />Continue setup
-                </Button>
-                <Form
-                    v-else
-                    v-bind="enable.form()"
-                    @success="showSetupModal = true"
-                    #default="{ processing }"
-                >
-                    <Button type="submit" :disabled="processing" class="btn-gradient-blue btn-shimmer">
-                        Enable 2FA
-                    </Button>
-                </Form>
-            </div>
-        </div>
+            <div
+                v-if="!twoFactorEnabled"
+                class="flex flex-col items-start justify-start space-y-4"
+            >
+                <p class="text-sm text-ink/70">
+                    When you enable two-factor authentication, you will be
+                    prompted for a secure pin during login. This pin can be
+                    retrieved from a TOTP-supported application on your phone.
+                </p>
 
-        <div v-else class="flex flex-col items-start justify-start space-y-4">
-            <p class="text-sm text-white/60">
-                You will be prompted for a secure, random pin during login,
-                which you can retrieve from the TOTP-supported application on
-                your phone.
-            </p>
-
-            <div class="relative inline">
-                <Form v-bind="disable.form()" #default="{ processing }">
+                <div>
                     <Button
-                        variant="destructive"
-                        type="submit"
-                        :disabled="processing"
-                        class="btn-gradient-pink btn-shimmer"
+                        v-if="hasSetupData"
+                        @click="showSetupModal = true"
+                        class="btn-gradient-blue btn-shimmer"
                     >
-                        Disable 2FA
+                        <ShieldCheck />Continue setup
                     </Button>
-                </Form>
+                    <Form
+                        v-else
+                        v-bind="enable.form()"
+                        @success="showSetupModal = true"
+                        #default="{ processing }"
+                    >
+                        <Button
+                            type="submit"
+                            :disabled="processing"
+                            class="btn-gradient-blue btn-shimmer"
+                        >
+                            Enable 2FA
+                        </Button>
+                    </Form>
+                </div>
             </div>
 
-            <TwoFactorRecoveryCodes />
-        </div>
+            <div
+                v-else
+                class="flex flex-col items-start justify-start space-y-4"
+            >
+                <p class="text-sm text-ink/70">
+                    You will be prompted for a secure, random pin during login,
+                    which you can retrieve from the TOTP-supported application
+                    on your phone.
+                </p>
 
-        <TwoFactorSetupModal
-            v-model:isOpen="showSetupModal"
-            :requiresConfirmation="requiresConfirmation"
-            :twoFactorEnabled="twoFactorEnabled"
-        />
-    </div>
+                <div class="relative inline">
+                    <Form v-bind="disable.form()" #default="{ processing }">
+                        <Button
+                            variant="destructive"
+                            type="submit"
+                            :disabled="processing"
+                            class="btn-gradient-pink btn-shimmer"
+                        >
+                            Disable 2FA
+                        </Button>
+                    </Form>
+                </div>
+
+                <TwoFactorRecoveryCodes />
+            </div>
+
+            <TwoFactorSetupModal
+                v-model:isOpen="showSetupModal"
+                :requiresConfirmation="requiresConfirmation"
+                :twoFactorEnabled="twoFactorEnabled"
+            />
+        </div>
     </div>
 </template>

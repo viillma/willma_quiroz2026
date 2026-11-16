@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Actions\Teams\CreateTeam;
+use App\Enums\UserStatus;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -11,58 +11,40 @@ class UsuariosSeeder extends Seeder
 {
     public function run(): void
     {
-        $createTeam = app(CreateTeam::class);
-
-        $admin = User::updateOrCreate(
-            ['email' => 'admin@diseno.com'],
+        $usuarios = [
             [
+                'email' => 'admin@diseno.com',
                 'name' => 'Administrador',
-                'password' => '12345678',
+                'phone' => '70000001',
                 'role' => Role::ADMINISTRADOR,
-            ]
-        );
-        $admin->assignRole(Role::ADMINISTRADOR);
-        $this->ensureTeam($admin, $createTeam);
-
-        $disenador = User::updateOrCreate(
-            ['email' => 'diseno@diseno.com'],
+            ],
             [
+                'email' => 'diseno@diseno.com',
                 'name' => 'Diseñador',
-                'password' => '12345678',
+                'phone' => '70000002',
                 'role' => Role::DISENADOR,
-            ]
-        );
-        $disenador->assignRole(Role::DISENADOR);
-        $this->ensureTeam($disenador, $createTeam);
-
-        $recepcionista = User::updateOrCreate(
-            ['email' => 'recepcion@diseno.com'],
+            ],
             [
+                'email' => 'recepcion@diseno.com',
                 'name' => 'Recepcionista',
-                'password' => '12345678',
+                'phone' => '70000003',
                 'role' => Role::RECEPCIONISTA,
-            ]
-        );
-        $recepcionista->assignRole(Role::RECEPCIONISTA);
-        $this->ensureTeam($recepcionista, $createTeam);
+            ],
+        ];
 
-        $asistente = User::updateOrCreate(
-            ['email' => 'asistente@diseno.com'],
-            [
-                'name' => 'Asistente',
-                'password' => '12345678',
-                'role' => Role::ASISTENTE,
-            ]
-        );
-        $asistente->assignRole(Role::ASISTENTE);
-        $this->ensureTeam($asistente, $createTeam);
-    }
+        foreach ($usuarios as $datos) {
+            $user = User::updateOrCreate(
+                ['email' => $datos['email']],
+                [
+                    'name' => $datos['name'],
+                    'phone' => $datos['phone'],
+                    'password' => '12345678',
+                    'status' => UserStatus::Activo,
+                    'email_verified_at' => now(),
+                ],
+            );
 
-    private function ensureTeam(User $user, CreateTeam $createTeam): void
-    {
-        if (! $user->personalTeam()) {
-            $team = $createTeam->handle($user, $user->name."'s Team", isPersonal: true);
-            $user->switchTeam($team);
+            $user->assignRole($datos['role']);
         }
     }
 }

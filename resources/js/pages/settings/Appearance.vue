@@ -21,8 +21,8 @@ defineOptions({
 
     <h1 class="sr-only">Appearance settings</h1>
 
-    <div class="animate-fade-in p-4 md:p-6 lg:p-8 space-y-6 relative">
-        <div class="glass-card rounded-2xl p-6 space-y-6 animate-slide-up">
+    <div class="animate-fade-in relative space-y-6 p-4 md:p-6 lg:p-8">
+        <div class="glass-card animate-slide-up space-y-6 rounded-2xl p-6">
             <Heading
                 variant="small"
                 title="Appearance settings"

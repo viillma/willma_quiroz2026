@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { Form, Head, usePage } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Loader2, ImagePlus, X } from 'lucide-vue-next';
+import { ref } from 'vue';
 import Heading from '@/components/Heading.vue';
-import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
     Select,
     SelectContent,
@@ -13,176 +13,363 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import AppSidebarLayout from '@/layouts/app/AppSidebarLayout.vue';
 import servicios from '@/routes/servicios';
-import { dashboard } from '@/routes';
-import type { Team } from '@/types';
+
+defineOptions({
+    layout: AppSidebarLayout,
+});
 
 const page = usePage<{
-    currentTeam?: Team | null;
     servicio: {
         id: number;
+        codigo: string | null;
         nombre: string;
-        descripcion: string;
-        precio: string;
+        categoria: string | null;
+        descripcion: string | null;
+        precio: number;
+        costo_estimado: number | null;
+        unidad: string | null;
         tiempo_estimado: number | null;
         imagen: string | null;
         estado: string;
     };
+    categorias: string[];
 }>();
 
-defineOptions({
-    layout: (props: { currentTeam?: Team | null }) => ({
-        breadcrumbs: [
-            {
-                title: 'Dashboard',
-                href: props.currentTeam
-                    ? dashboard(props.currentTeam.slug)
-                    : '/',
-            },
-            {
-                title: 'Servicios',
-                href: props.currentTeam
-                    ? servicios.index(props.currentTeam.slug)
-                    : '#',
-            },
-            {
-                title: 'Editar Servicio',
-                href: '#',
-            },
-        ],
-    }),
+const servicio = page.props.servicio;
+const categorias = page.props.categorias ?? [];
+
+const form = useForm({
+    nombre: servicio.nombre,
+    codigo: servicio.codigo ?? '',
+    categoria: servicio.categoria ?? '',
+    descripcion: servicio.descripcion ?? '',
+    precio: String(servicio.precio ?? ''),
+    costo_estimado:
+        servicio.costo_estimado !== null ? String(servicio.costo_estimado) : '',
+    unidad: servicio.unidad ?? '',
+    tiempo_estimado: servicio.tiempo_estimado
+        ? String(servicio.tiempo_estimado)
+        : '',
+    imagen: null as File | null,
+    estado: servicio.estado,
 });
 
-const currentTeam = page.props.currentTeam;
+const preview = ref<string | null>(servicio.imagen);
+const fileInput = ref<HTMLInputElement | null>(null);
+const imageError = ref<string | null>(null);
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+function onFileChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+
+    if (!file) {
+        return;
+    }
+
+    imageError.value = null;
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+        imageError.value = 'Formato no válido. Usa JPG, PNG o WEBP.';
+        target.value = '';
+
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        imageError.value = 'La imagen es muy pesada (máx. 5 MB).';
+        target.value = '';
+
+        return;
+    }
+
+    form.imagen = file;
+    preview.value = URL.createObjectURL(file);
+}
+
+function submit() {
+    form.transform((data) => ({ ...data, _method: 'PUT' })).post(
+        servicios.update.url({ servicio: servicio.id }),
+        {
+            preserveScroll: true,
+        },
+    );
+}
 </script>
 
 <template>
-    <Head title="Editar Servicio" />
+    <Head :title="'Editar ' + servicio.nombre" />
 
-    <div class="animate-fade-in p-4 md:p-6 lg:p-8 max-w-2xl space-y-6 relative">
-        <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 ring-1 ring-white/10">
-                <svg class="h-5 w-5 text-purple-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <Heading
-                title="Editar Servicio"
-                description="Modifica los datos del servicio"
-            />
-        </div>
+    <div class="animate-fade-in relative space-y-6 p-4 md:p-6 lg:p-8">
+        <Heading
+            :title="'Editar ' + servicio.nombre"
+            description="Modifica la información del servicio"
+        />
 
         <div class="glass-card rounded-2xl p-6 md:p-8">
-            <Form
-                    v-if="currentTeam"
-                    v-bind="
-                        servicios.update.form({
-                            current_team: currentTeam.slug,
-                            servicio: page.props.servicio.id,
-                        })
-                    "
-                    class="space-y-6"
-                    #default="{ errors, processing }"
-                >
-            <div class="space-y-2">
-                <Label for="nombre">Nombre *</Label>
-                <Input
-                    id="nombre"
-                    name="nombre"
-                    type="text"
-                    required
-                    :default-value="page.props.servicio.nombre"
-                    placeholder="Nombre del servicio"
-                    class="bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-purple-500/50"
-                />
-                <InputError :message="errors.nombre" />
-            </div>
-
-            <div class="space-y-2">
-                <Label for="descripcion">Descripcion</Label>
-                <Textarea
-                    id="descripcion"
-                    name="descripcion"
-                    rows="3"
-                    :default-value="page.props.servicio.descripcion"
-                    placeholder="Descripcion del servicio"
-                    class="bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-purple-500/50"
-                />
-                <InputError :message="errors.descripcion" />
-            </div>
-
-            <div class="space-y-2">
-                <Label for="precio">Precio * (S/)</Label>
-                <Input
-                    id="precio"
-                    name="precio"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    required
-                    :default-value="page.props.servicio.precio"
-                    placeholder="0.00"
-                    class="bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-purple-500/50"
-                />
-                <InputError :message="errors.precio" />
-            </div>
-
-            <div class="space-y-2">
-                <Label for="tiempo_estimado">Tiempo Estimado (días)</Label>
-                <Input
-                    id="tiempo_estimado"
-                    name="tiempo_estimado"
-                    type="number"
-                    min="1"
-                    :default-value="page.props.servicio.tiempo_estimado ?? ''"
-                    placeholder="5"
-                    class="bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-purple-500/50"
-                />
-                <InputError :message="errors.tiempo_estimado" />
-            </div>
-
-            <div class="space-y-2">
-                <Label for="imagen">Imagen Referencial</Label>
-                <Input
-                    id="imagen"
-                    name="imagen"
-                    type="file"
-                    accept="image/png,image/jpg,image/jpeg,image/svg,image/webp"
-                    class="bg-white/5 border-white/10 text-white file:text-white file:bg-white/10 file:border-0 file:rounded-lg file:px-3 file:py-1.5 file:text-sm file:font-medium focus:border-purple-500/50"
-                />
-                <InputError :message="errors.imagen" />
-                <p v-if="page.props.servicio.imagen" class="text-xs text-white/50">
-                    Deja en blanco para mantener la imagen actual
-                </p>
-            </div>
-
-            <div class="space-y-2">
-                <Label for="estado">Estado</Label>
-                <Select
-                    name="estado"
-                    :default-value="page.props.servicio.estado"
-                    required
-                >
-                    <SelectTrigger class="bg-white/5 border-white/10 text-white">
-                        <SelectValue
-                            :placeholder="page.props.servicio.estado"
+            <form class="space-y-6" @submit.prevent="submit">
+                <div class="flex flex-col gap-6 md:flex-row">
+                    <div class="flex flex-col items-center gap-3 md:w-64">
+                        <div
+                            class="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-xl border border-dashed border-ink/20 bg-ink/5"
+                        >
+                            <img
+                                v-if="preview"
+                                :src="preview"
+                                alt="Vista previa"
+                                class="h-full w-full object-cover"
+                            />
+                            <ImagePlus v-else class="h-10 w-10 text-ink/30" />
+                            <span
+                                v-if="preview && !form.imagen"
+                                class="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-[10px] text-white/80"
+                            >
+                                Imagen actual
+                            </span>
+                            <button
+                                v-if="preview && form.imagen"
+                                type="button"
+                                class="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white/80 hover:bg-red-500/80"
+                                @click="
+                                    form.imagen = null;
+                                    preview = servicio.imagen;
+                                "
+                            >
+                                <X class="h-4 w-4" />
+                            </button>
+                        </div>
+                        <input
+                            ref="fileInput"
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            class="hidden"
+                            @change="onFileChange"
                         />
-                    </SelectTrigger>
-                    <SelectContent class="bg-gray-900 border-white/10 text-white">
-                        <SelectItem value="activo">Activo</SelectItem>
-                        <SelectItem value="inactivo">Inactivo</SelectItem>
-                    </SelectContent>
-                </Select>
-                <InputError :message="errors.estado" />
-            </div>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            class="btn-gradient-ghost w-full"
+                            @click="fileInput?.click()"
+                        >
+                            <ImagePlus class="mr-1.5 h-4 w-4" />
+                            {{
+                                form.imagen ? 'Cambiar imagen' : 'Subir imagen'
+                            }}
+                        </Button>
+                        <p
+                            v-if="imageError"
+                            class="w-full text-center text-xs text-red-500"
+                        >
+                            {{ imageError }}
+                        </p>
+                        <p
+                            v-if="form.errors.imagen"
+                            class="w-full text-center text-xs text-red-500"
+                        >
+                            {{ form.errors.imagen }}
+                        </p>
+                    </div>
 
-            <div class="flex gap-4">
-                <Button type="submit" :disabled="processing" class="btn-gradient-blue btn-shimmer">Actualizar</Button>
-                <Button type="button" variant="outline" as-child class="btn-gradient-ghost">
-                    <a :href="servicios.index(currentTeam.slug).url"
-                        >Cancelar</a
+                    <div class="flex-1 space-y-5">
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div class="space-y-2">
+                                <Label for="nombre"
+                                    >Nombre del servicio *</Label
+                                >
+                                <Input
+                                    id="nombre"
+                                    v-model="form.nombre"
+                                    type="text"
+                                    placeholder="Ej: Diseño de logo"
+                                    class="glass"
+                                />
+                                <p
+                                    v-if="form.errors.nombre"
+                                    class="text-xs text-red-500"
+                                >
+                                    {{ form.errors.nombre }}
+                                </p>
+                            </div>
+                            <div class="space-y-2">
+                                <Label for="codigo">Código</Label>
+                                <Input
+                                    id="codigo"
+                                    v-model="form.codigo"
+                                    type="text"
+                                    placeholder="Ej: SRV-0001"
+                                    class="glass"
+                                />
+                                <p
+                                    v-if="form.errors.codigo"
+                                    class="text-xs text-red-500"
+                                >
+                                    {{ form.errors.codigo }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-3">
+                            <div class="space-y-2">
+                                <Label for="categoria">Categoría</Label>
+                                <Select v-model="form.categoria">
+                                    <SelectTrigger class="glass"
+                                        ><SelectValue placeholder="Seleccionar"
+                                    /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem
+                                            v-for="cat in categorias"
+                                            :key="cat"
+                                            :value="cat"
+                                            >{{ cat }}</SelectItem
+                                        >
+                                    </SelectContent>
+                                </Select>
+                                <p
+                                    v-if="form.errors.categoria"
+                                    class="text-xs text-red-500"
+                                >
+                                    {{ form.errors.categoria }}
+                                </p>
+                            </div>
+                            <div class="space-y-2">
+                                <Label for="precio">Precio * (Bs)</Label>
+                                <Input
+                                    id="precio"
+                                    v-model="form.precio"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    placeholder="0.00"
+                                    class="glass"
+                                />
+                                <p
+                                    v-if="form.errors.precio"
+                                    class="text-xs text-red-500"
+                                >
+                                    {{ form.errors.precio }}
+                                </p>
+                            </div>
+                            <div class="space-y-2">
+                                <Label for="costo_estimado"
+                                    >Costo estimado (Bs)</Label
+                                >
+                                <Input
+                                    id="costo_estimado"
+                                    v-model="form.costo_estimado"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    placeholder="0.00"
+                                    class="glass"
+                                />
+                                <p
+                                    v-if="form.errors.costo_estimado"
+                                    class="text-xs text-red-500"
+                                >
+                                    {{ form.errors.costo_estimado }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-3">
+                            <div class="space-y-2">
+                                <Label for="unidad">Unidad</Label>
+                                <Input
+                                    id="unidad"
+                                    v-model="form.unidad"
+                                    type="text"
+                                    placeholder="Ej: unidad, hora"
+                                    class="glass"
+                                />
+                                <p
+                                    v-if="form.errors.unidad"
+                                    class="text-xs text-red-500"
+                                >
+                                    {{ form.errors.unidad }}
+                                </p>
+                            </div>
+                            <div class="space-y-2">
+                                <Label for="tiempo_estimado"
+                                    >Tiempo estimado (días)</Label
+                                >
+                                <Input
+                                    id="tiempo_estimado"
+                                    v-model="form.tiempo_estimado"
+                                    type="number"
+                                    min="1"
+                                    placeholder="5"
+                                    class="glass"
+                                />
+                                <p
+                                    v-if="form.errors.tiempo_estimado"
+                                    class="text-xs text-red-500"
+                                >
+                                    {{ form.errors.tiempo_estimado }}
+                                </p>
+                            </div>
+                            <div class="space-y-2">
+                                <Label for="estado">Estado</Label>
+                                <Select v-model="form.estado">
+                                    <SelectTrigger class="glass"
+                                        ><SelectValue
+                                    /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="activo"
+                                            >Activo</SelectItem
+                                        >
+                                        <SelectItem value="inactivo"
+                                            >Inactivo</SelectItem
+                                        >
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <Label for="descripcion">Descripción</Label>
+                            <Textarea
+                                id="descripcion"
+                                v-model="form.descripcion"
+                                rows="3"
+                                placeholder="Describe el servicio..."
+                                class="glass"
+                            />
+                            <p
+                                v-if="form.errors.descripcion"
+                                class="text-xs text-red-500"
+                            >
+                                {{ form.errors.descripcion }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 border-t border-ink/10 pt-5">
+                    <Button
+                        type="submit"
+                        :disabled="form.processing"
+                        class="btn-gradient-blue btn-shimmer"
                     >
-                </Button>
-            </div>
-                </Form>
+                        <Loader2
+                            v-if="form.processing"
+                            class="mr-2 h-4 w-4 animate-spin"
+                        />
+                        Guardar Cambios
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        as-child
+                        class="btn-gradient-ghost"
+                    >
+                        <a :href="servicios.index().url">Cancelar</a>
+                    </Button>
+                </div>
+            </form>
         </div>
     </div>
 </template>

@@ -1,24 +1,18 @@
 <?php
 
-use App\Models\Role;
 use App\Models\Servicio;
 use App\Models\User;
 use Database\Seeders\PermissionsSeeder;
 
 beforeEach(fn () => $this->seed(PermissionsSeeder::class));
 
-function adminUser()
+function adminUser(): User
 {
-    $user = User::factory()->create();
-    $role = Role::where('nombre', 'administrador')->first();
-    $user->roles()->sync([$role->id]);
-
-    return $user->fresh();
+    return User::factory()->admin()->create();
 }
 
-test('authenticated team members can view service forms', function () {
+test('authorized users can view service forms', function () {
     $user = adminUser();
-    $team = $user->currentTeam;
     $servicio = Servicio::create([
         'nombre' => 'Fotografia',
         'descripcion' => 'Servicio de fotos',
@@ -26,31 +20,28 @@ test('authenticated team members can view service forms', function () {
         'estado' => 'activo',
     ]);
 
-    $this
-        ->actingAs($user)
-        ->get(route('servicios.create', ['current_team' => $team]))
+    $this->actingAs($user)
+        ->get(route('servicios.create'))
         ->assertOk();
 
-    $this
-        ->actingAs($user)
-        ->get(route('servicios.edit', ['current_team' => $team, 'servicio' => $servicio]))
+    $this->actingAs($user)
+        ->get(route('servicios.edit', ['servicio' => $servicio]))
         ->assertOk();
 });
 
-test('authenticated team members can create services', function () {
+test('authorized users can create services', function () {
     $user = adminUser();
-    $team = $user->currentTeam;
 
     $response = $this
         ->actingAs($user)
-        ->post(route('servicios.store', ['current_team' => $team]), [
+        ->post(route('servicios.store'), [
             'nombre' => 'Desarrollo web',
             'descripcion' => 'Servicio de desarrollo web',
             'precio' => '150.00',
             'estado' => 'activo',
         ]);
 
-    $response->assertRedirect(route('servicios.index', ['current_team' => $team]));
+    $response->assertRedirect(route('servicios.index'));
 
     $this->assertDatabaseHas('servicios', [
         'nombre' => 'Desarrollo web',
@@ -60,9 +51,8 @@ test('authenticated team members can create services', function () {
     ]);
 });
 
-test('authenticated team members can update services', function () {
+test('authorized users can update services', function () {
     $user = adminUser();
-    $team = $user->currentTeam;
     $servicio = Servicio::create([
         'nombre' => 'Original',
         'descripcion' => 'Descripcion original',
@@ -72,14 +62,14 @@ test('authenticated team members can update services', function () {
 
     $response = $this
         ->actingAs($user)
-        ->put(route('servicios.update', ['current_team' => $team, 'servicio' => $servicio]), [
+        ->put(route('servicios.update', ['servicio' => $servicio]), [
             'nombre' => 'Actualizado',
             'descripcion' => 'Descripcion actualizada',
             'precio' => '200.00',
             'estado' => 'inactivo',
         ]);
 
-    $response->assertRedirect(route('servicios.index', ['current_team' => $team]));
+    $response->assertRedirect(route('servicios.index'));
 
     $this->assertDatabaseHas('servicios', [
         'id' => $servicio->id,
@@ -90,9 +80,8 @@ test('authenticated team members can update services', function () {
     ]);
 });
 
-test('authenticated team members can delete services', function () {
+test('authorized users can delete services', function () {
     $user = adminUser();
-    $team = $user->currentTeam;
     $servicio = Servicio::create([
         'nombre' => 'Servicio temporal',
         'descripcion' => 'Para eliminar',
@@ -102,11 +91,19 @@ test('authenticated team members can delete services', function () {
 
     $response = $this
         ->actingAs($user)
-        ->delete(route('servicios.destroy', ['current_team' => $team, 'servicio' => $servicio]));
+        ->delete(route('servicios.destroy', ['servicio' => $servicio]));
 
-    $response->assertRedirect(route('servicios.index', ['current_team' => $team]));
+    $response->assertRedirect(route('servicios.index'));
 
     $this->assertDatabaseMissing('servicios', [
         'id' => $servicio->id,
     ]);
+});
+
+test('recepcionistas cannot manage services', function () {
+    $user = User::factory()->recepcionista()->create();
+
+    $this->actingAs($user)
+        ->get(route('servicios.create'))
+        ->assertForbidden();
 });

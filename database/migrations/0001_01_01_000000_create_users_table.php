@@ -15,8 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('phone', 30)->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->foreignId('role_id')->nullable()->constrained('roles')->nullOnDelete();
+            $table->string('status', 20)->default('activo')->index();
             $table->rememberToken();
             $table->timestamps();
         });

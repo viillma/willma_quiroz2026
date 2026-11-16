@@ -2,24 +2,23 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Concerns\HasTeams;
 use App\Enums\Permission;
+use App\Enums\UserStatus;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-#[Fillable(['name', 'email', 'password', 'current_team_id', 'role', 'activo'])]
+#[Fillable(['name', 'email', 'phone', 'password', 'role_id', 'status'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasTeams, Notifiable, TwoFactorAuthenticatable;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * Get the attributes that should be cast.
@@ -32,32 +31,39 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
-            'activo' => 'boolean',
+            'status' => UserStatus::class,
         ];
     }
 
-    public function roles(): BelongsToMany
+    public function role(): BelongsTo
     {
-        return $this->belongsToMany(Role::class, 'role_user')
-            ->withTimestamps();
+        return $this->belongsTo(Role::class);
     }
 
+    /**
+     * Assign a single role by its name, replacing the current one.
+     */
     public function assignRole(string $roleName): void
     {
-        $role = Role::where('nombre', $roleName)->firstOrFail();
-        $this->roles()->syncWithoutDetaching([$role->id]);
+        $role = Role::where('nombre', $roleName)->first() ?? Role::defaultRole($roleName);
+
+        $this->forceFill(['role_id' => $role->id])->save();
+        $this->setRelation('role', $role);
     }
 
     public function hasRole(string $role): bool
     {
-        return $this->roles()->where('nombre', $role)->exists();
+        return strtolower((string) $this->role?->nombre) === strtolower($role);
     }
 
+    /**
+     * @param  array<int, string>|string  $roles
+     */
     public function hasAnyRole(array|string $roles): bool
     {
-        $roles = is_array($roles) ? $roles : [$roles];
+        $roles = array_map('strtolower', is_array($roles) ? $roles : [$roles]);
 
-        return $this->roles()->whereIn('nombre', $roles)->exists();
+        return $this->role !== null && in_array(strtolower($this->role->nombre), $roles, true);
     }
 
     public function isAdmin(): bool
@@ -65,25 +71,34 @@ class User extends Authenticatable
         return $this->hasRole(Role::ADMINISTRADOR);
     }
 
+    /**
+     * The role names held by the user (single-role model).
+     *
+     * @return array<int, string>
+     */
     public function rolesNombres(): array
     {
-        return $this->roles()->pluck('nombre')->toArray();
+        return $this->role ? [$this->role->nombre] : [];
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function permissionsNombres(): array
     {
         if ($this->isAdmin()) {
             return Permission::valuesForAdministrador();
         }
 
-        return $this->roles()
-            ->with('permissions')
-            ->get()
-            ->pluck('permissions.*.nombre')
-            ->flatten()
+        if (! $this->role) {
+            return [];
+        }
+
+        return $this->role->permissions()
+            ->pluck('nombre')
             ->unique()
             ->values()
-            ->toArray();
+            ->all();
     }
 
     public function hasPermission(string $permission): bool
@@ -92,25 +107,39 @@ class User extends Authenticatable
             return true;
         }
 
-        return in_array($permission, $this->permissionsNombres());
+        return in_array($permission, $this->permissionsNombres(), true);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === UserStatus::Activo;
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === UserStatus::Pendiente;
+    }
+
+    public function isSuspended(): bool
+    {
+        return $this->status === UserStatus::Suspendido;
     }
 
     public function canAccessPanel(): bool
     {
-        return $this->hasPermission(Permission::PanelVer->value);
+        return $this->isActive() && $this->hasPermission(Permission::PanelVer->value);
     }
 
-    public function syncRolesFromLegacyColumn(): void
+    /**
+     * The named route the user should land on after authenticating.
+     */
+    public function landingRoute(): string
     {
-        if ($this->role && ! $this->roles()->exists()) {
-            $this->assignRole($this->role);
-        }
-    }
-
-    public function ensureRolesHavePermissions(): void
-    {
-        foreach ($this->roles()->get() as $role) {
-            $role->ensureDefaultPermissions();
-        }
+        return match (true) {
+            $this->isAdmin() => 'admin',
+            $this->hasRole(Role::RECEPCIONISTA) => 'recepcion',
+            $this->hasRole(Role::DISENADOR) => 'diseno',
+            default => 'dashboard',
+        };
     }
 }

@@ -10,10 +10,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DesignFileController extends Controller
 {
-    public function index(string $currentTeam, Order $order): Response
+    public function index(Order $order): Response
     {
         $order->load(['designFiles.uploader', 'client']);
 
@@ -22,7 +23,7 @@ class DesignFileController extends Controller
         ]);
     }
 
-    public function store(DesignFileFormRequest $request, string $currentTeam, Order $order): RedirectResponse
+    public function store(DesignFileFormRequest $request, Order $order): RedirectResponse
     {
         $file = $request->file('file');
         $path = $file->store('designs/'.$order->id, 'public');
@@ -39,34 +40,31 @@ class DesignFileController extends Controller
         ]);
 
         return to_route('disenos.index', [
-            'current_team' => $currentTeam,
             'order' => $order->id,
         ]);
     }
 
-    public function download(string $currentTeam, Order $order, DesignFile $designFile): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function download(Order $order, DesignFile $designFile): StreamedResponse
     {
         return Storage::disk('public')->download($designFile->file_path);
     }
 
-    public function approve(string $currentTeam, Order $order, DesignFile $designFile): RedirectResponse
+    public function approve(Order $order, DesignFile $designFile): RedirectResponse
     {
         $order->designFiles()->update(['is_approved' => false]);
         $designFile->update(['is_approved' => true]);
 
         return to_route('disenos.index', [
-            'current_team' => $currentTeam,
             'order' => $order->id,
         ]);
     }
 
-    public function destroy(string $currentTeam, Order $order, DesignFile $designFile): RedirectResponse
+    public function destroy(Order $order, DesignFile $designFile): RedirectResponse
     {
         Storage::disk('public')->delete($designFile->file_path);
         $designFile->delete();
 
         return to_route('disenos.index', [
-            'current_team' => $currentTeam,
             'order' => $order->id,
         ]);
     }

@@ -42,10 +42,9 @@ class RedirectIfAuthenticated
     protected function defaultRedirectUri(): string
     {
         $user = Auth::user();
-        $team = $user?->currentTeam ?? $user?->personalTeam();
 
-        if ($team && Route::has('dashboard')) {
-            return route('dashboard', ['current_team' => $team->slug]);
+        if ($user && $user->isActive() && Route::has($user->landingRoute())) {
+            return route($user->landingRoute());
         }
 
         return '/';

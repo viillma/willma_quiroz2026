@@ -27,24 +27,39 @@ defineProps<{
 
     <div class="animate-fade-in space-y-6">
         <!-- Status -->
-        <div v-if="status" class="animate-slide-up rounded-xl bg-green-500/10 p-4 text-center text-sm font-medium text-green-400 ring-1 ring-green-500/20">
+        <div
+            v-if="status"
+            class="animate-slide-up rounded-xl bg-mint/50 p-4 text-center text-sm font-semibold text-[#17805a] ring-1 ring-mint"
+        >
             {{ status }}
         </div>
 
         <!-- Title -->
         <div class="animate-slide-up text-center">
-            <h1 class="text-2xl font-bold text-white">Recuperar Contraseña</h1>
-            <p class="mt-2 text-sm text-white/60">Ingresa tu correo y te enviaremos un enlace</p>
+            <span
+                class="text-[11px] font-bold tracking-[0.2em] text-pix uppercase"
+                >Recupera tu acceso</span
+            >
+            <h1
+                class="mt-3 font-display text-3xl font-extrabold tracking-tight text-ink"
+            >
+                Recuperar Contraseña
+            </h1>
+            <p class="mt-2 text-sm text-ink/55">
+                Ingresa tu correo y te enviaremos un enlace
+            </p>
         </div>
 
         <Form v-bind="email.form()" v-slot="{ errors, processing }">
             <div class="space-y-2">
-                <Label for="email" class="text-sm font-medium text-white/80">
+                <Label for="email" class="text-sm font-semibold text-ink/80">
                     Correo electrónico
                 </Label>
                 <div class="relative">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                        <Mail class="h-4 w-4 text-white/40" />
+                    <div
+                        class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5"
+                    >
+                        <Mail class="h-4 w-4 text-ink/35" />
                     </div>
                     <Input
                         id="email"
@@ -53,7 +68,7 @@ defineProps<{
                         autocomplete="off"
                         autofocus
                         placeholder="tu@correo.com"
-                        class="pl-10 h-11 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-white/40 transition-all duration-200 focus:bg-white/10 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+                        class="h-11 rounded-xl border-ink/10 bg-warm pl-10 text-ink transition-all duration-200 placeholder:text-ink/35 focus:border-pix/40 focus:bg-white focus:ring-pix/20"
                     />
                 </div>
                 <InputError :message="errors.email" />
@@ -61,7 +76,7 @@ defineProps<{
 
             <div class="mt-6">
                 <Button
-                    class="btn-gradient-blue btn-shimmer w-full h-12 text-base font-semibold"
+                    class="group h-12 w-full rounded-xl bg-pix text-base font-bold text-white shadow-lg shadow-pix/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-pix-2 hover:shadow-xl hover:shadow-pix/30"
                     :disabled="processing"
                     data-test="email-password-reset-link-button"
                 >
@@ -77,7 +92,10 @@ defineProps<{
         </Form>
 
         <div class="mt-8 text-center">
-            <TextLink :href="login()" class="inline-flex items-center gap-1.5 text-sm font-medium text-blue-400 hover:text-purple-400 transition-colors">
+            <TextLink
+                :href="login()"
+                class="inline-flex items-center gap-1.5 text-sm font-semibold text-pix transition-colors hover:text-pix-2"
+            >
                 <ArrowLeft class="h-4 w-4" />
                 Volver al inicio de sesión
             </TextLink>

@@ -38,8 +38,8 @@ const user = computed(() => page.props.auth.user);
 
     <h1 class="sr-only">Profile settings</h1>
 
-    <div class="animate-fade-in p-4 md:p-6 lg:p-8 space-y-6 relative">
-        <div class="glass-card rounded-2xl p-6 space-y-6 animate-slide-up">
+    <div class="animate-fade-in relative space-y-6 p-4 md:p-6 lg:p-8">
+        <div class="glass-card animate-slide-up space-y-6 rounded-2xl p-6">
             <Heading
                 variant="small"
                 title="Profile information"
@@ -55,7 +55,7 @@ const user = computed(() => page.props.auth.user);
                     <Label for="name">Name</Label>
                     <Input
                         id="name"
-                        class="mt-1 block w-full bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                        class="mt-1 block w-full border-ink/10 bg-ink/5 text-ink placeholder:text-ink/40"
                         name="name"
                         :default-value="user.name"
                         required
@@ -70,7 +70,7 @@ const user = computed(() => page.props.auth.user);
                     <Input
                         id="email"
                         type="email"
-                        class="mt-1 block w-full bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                        class="mt-1 block w-full border-ink/10 bg-ink/5 text-ink placeholder:text-ink/40"
                         name="email"
                         :default-value="user.email"
                         required
@@ -81,12 +81,12 @@ const user = computed(() => page.props.auth.user);
                 </div>
 
                 <div v-if="mustVerifyEmail && !user.email_verified_at">
-                    <p class="-mt-4 text-sm text-white/60">
+                    <p class="-mt-4 text-sm text-ink/70">
                         Your email address is unverified.
                         <Link
                             :href="send()"
                             as="button"
-                            class="text-white underline decoration-white/30 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current!"
+                            class="text-ink underline decoration-ink/30 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current!"
                         >
                             Click here to resend the verification email.
                         </Link>
@@ -94,19 +94,25 @@ const user = computed(() => page.props.auth.user);
 
                     <div
                         v-if="status === 'verification-link-sent'"
-                        class="mt-2 text-sm font-medium text-green-400"
+                        class="mt-2 text-sm font-semibold text-green-600"
                     >
-                        A new verification link has been sent to your email address.
+                        A new verification link has been sent to your email
+                        address.
                     </div>
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <Button :disabled="processing" data-test="update-profile-button" class="btn-gradient-blue btn-shimmer">Save</Button>
+                    <Button
+                        :disabled="processing"
+                        data-test="update-profile-button"
+                        class="btn-gradient-blue btn-shimmer"
+                        >Save</Button
+                    >
                 </div>
             </Form>
         </div>
 
-        <div class="glass-card rounded-2xl p-6 animate-slide-up">
+        <div class="glass-card animate-slide-up rounded-2xl p-6">
             <DeleteUser />
         </div>
     </div>

@@ -1,5 +1,5 @@
-import { computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 export function usePermissions() {
     const page = usePage();
@@ -9,6 +9,7 @@ export function usePermissions() {
         if (auth.value.isAdmin) {
             return true;
         }
+
         return (auth.value.permissions ?? []).includes(permission);
     };
 

@@ -22,12 +22,23 @@ defineOptions({
     <div class="animate-fade-in space-y-6">
         <!-- Title -->
         <div class="animate-slide-up text-center">
-            <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-pink-500 shadow-lg shadow-pink-500/25">
-                <ShieldAlert class="h-6 w-6 text-white" />
+            <div
+                class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-peach to-blush text-[#cf6c0b] shadow-lg shadow-peach/40"
+            >
+                <ShieldAlert class="h-6 w-6" />
             </div>
-            <h1 class="text-2xl font-bold text-white">Confirmar Contraseña</h1>
-            <p class="mt-2 text-sm text-white/60">
-                Esta es un área segura. Por favor confirma tu contraseña antes de continuar.
+            <span
+                class="text-[11px] font-bold tracking-[0.2em] text-pix uppercase"
+                >Zona segura</span
+            >
+            <h1
+                class="mt-3 font-display text-3xl font-extrabold tracking-tight text-ink"
+            >
+                Confirmar Contraseña
+            </h1>
+            <p class="mt-2 text-sm text-ink/55">
+                Esta es un área segura. Por favor confirma tu contraseña antes
+                de continuar.
             </p>
         </div>
 
@@ -37,12 +48,14 @@ defineOptions({
             v-slot="{ errors, processing }"
         >
             <div class="space-y-2">
-                <Label for="password" class="text-sm font-medium text-white/80">
+                <Label for="password" class="text-sm font-semibold text-ink/80">
                     Contraseña
                 </Label>
                 <div class="relative">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                        <Lock class="h-4 w-4 text-white/40" />
+                    <div
+                        class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5"
+                    >
+                        <Lock class="h-4 w-4 text-ink/35" />
                     </div>
                     <PasswordInput
                         id="password"
@@ -51,7 +64,7 @@ defineOptions({
                         autocomplete="current-password"
                         autofocus
                         placeholder="Tu contraseña actual"
-                        class="pl-10 h-11 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-white/40 transition-all duration-200 focus:bg-white/10 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+                        class="h-11 rounded-xl border-ink/10 bg-warm pl-10 text-ink transition-all duration-200 placeholder:text-ink/35 focus:border-pix/40 focus:bg-white focus:ring-pix/20"
                     />
                 </div>
                 <InputError :message="errors.password" />
@@ -59,15 +72,13 @@ defineOptions({
 
             <div class="mt-6">
                 <Button
-                    class="btn-gradient-blue btn-shimmer w-full h-12 text-base font-semibold"
+                    class="h-12 w-full rounded-xl bg-pix font-bold text-white shadow-lg shadow-pix/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-pix-2 hover:shadow-xl hover:shadow-pix/30"
                     :disabled="processing"
                     data-test="confirm-password-button"
                 >
                     <span class="flex items-center justify-center gap-2">
                         <Spinner v-if="processing" class="h-5 w-5 text-white" />
-                        <template v-else>
-                            Confirmar Contraseña
-                        </template>
+                        <template v-else> Confirmar Contraseña </template>
                     </span>
                 </Button>
             </div>

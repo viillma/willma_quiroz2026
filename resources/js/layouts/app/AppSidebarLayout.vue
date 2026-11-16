@@ -21,7 +21,7 @@ withDefaults(defineProps<Props>(), {
         <GlobalBackground />
 
         <AppSidebar />
-        <AppContent variant="sidebar" class="overflow-x-hidden relative z-10">
+        <AppContent variant="sidebar" class="relative z-10 overflow-x-hidden">
             <AppSidebarHeader :breadcrumbs="breadcrumbs" />
             <slot />
         </AppContent>

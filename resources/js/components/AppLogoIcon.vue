@@ -20,26 +20,47 @@ defineProps<Props>();
         v-bind="$attrs"
         fill="none"
     >
+        <rect width="40" height="40" rx="12" fill="#171A2B" />
+        <rect
+            width="40"
+            height="40"
+            rx="12"
+            fill="url(#creapix-grad)"
+            opacity="0.96"
+        />
+        <path
+            d="M20 7L33 13.2V21.6C33 28.9 27.4 34.4 20 37C12.6 34.4 7 28.9 7 21.6V13.2L20 7Z"
+            fill="white"
+            opacity="0.95"
+        />
+        <path
+            d="M20 11.5L28.6 15.5V21.2C28.6 26.5 25 30.3 20 32.4C15 30.3 11.4 26.5 11.4 21.2V15.5L20 11.5Z"
+            fill="url(#creapix-grad)"
+        />
+        <text
+            x="20"
+            y="27"
+            text-anchor="middle"
+            font-family="Plus Jakarta Sans, Arial, sans-serif"
+            font-weight="800"
+            font-size="15"
+            fill="#FFFFFF"
+        >
+            C
+        </text>
         <defs>
-            <linearGradient id="logo-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#2563EB" />
-                <stop offset="50%" stop-color="#7C3AED" />
-                <stop offset="100%" stop-color="#EC4899" />
+            <linearGradient
+                id="creapix-grad"
+                x1="0"
+                y1="0"
+                x2="40"
+                y2="40"
+                gradientUnits="userSpaceOnUse"
+            >
+                <stop offset="0%" stop-color="#F43F7A" />
+                <stop offset="55%" stop-color="#DCCBFF" />
+                <stop offset="100%" stop-color="#FFD8C2" />
             </linearGradient>
         </defs>
-        <rect width="40" height="40" rx="10" fill="url(#logo-grad)" />
-        <path
-            d="M14 12C14 10.8954 14.8954 10 16 10H24C25.1046 10 26 10.8954 26 12V14C26 15.1046 25.1046 16 24 16H16C14.8954 16 14 15.1046 14 14V12Z"
-            fill="white"
-            opacity="0.9"
-        />
-        <circle cx="20" cy="22" r="8" fill="white" opacity="0.9" />
-        <path
-            d="M20 16L22.5 19.5H17.5L20 16ZM20 28L17.5 24.5H22.5L20 28Z"
-            fill="#7C3AED"
-            opacity="0.8"
-        />
-        <circle cx="17" cy="22" r="1.5" fill="#2563EB" />
-        <circle cx="23" cy="22" r="1.5" fill="#EC4899" />
     </svg>
 </template>

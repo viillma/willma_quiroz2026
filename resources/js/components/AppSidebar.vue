@@ -1,12 +1,29 @@
 <script setup lang="ts">
-import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid, Users, Briefcase, Package, Palette, DollarSign, BarChart3, Shield, ShieldCheck, Settings, Image as ImageIcon } from 'lucide-vue-next';
+import { Link } from '@inertiajs/vue3';
+import {
+    Mail,
+    Globe,
+    LayoutGrid,
+    Users,
+    Briefcase,
+    Package,
+    FileText,
+    DollarSign,
+    BarChart3,
+    Shield,
+    ShieldCheck,
+    Settings,
+    Image as ImageIcon,
+    Layers,
+    SlidersHorizontal,
+    FolderOpen,
+    FolderKanban,
+} from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
-import TeamSwitcher from '@/components/TeamSwitcher.vue';
 import {
     Sidebar,
     SidebarContent,
@@ -17,96 +34,126 @@ import {
     SidebarMenuItem,
     SidebarSeparator,
 } from '@/components/ui/sidebar';
+import { usePermissions } from '@/composables/usePermissions';
 import { dashboard } from '@/routes';
-import servicios from '@/routes/servicios';
-import usuarios from '@/routes/usuarios';
+import adminWeb from '@/routes/admin-web';
+import catalogo from '@/routes/catalogo';
 import clientes from '@/routes/clientes';
+import configuracion from '@/routes/configuracion';
+import cotizaciones from '@/routes/cotizaciones';
+import media from '@/routes/media';
+import pagos from '@/routes/pagos';
 import pedidos from '@/routes/pedidos';
+import portafolio from '@/routes/portafolio';
 import reportes from '@/routes/reportes';
 import roles from '@/routes/roles';
-import { usePermissions } from '@/composables/usePermissions';
+import servicios from '@/routes/servicios';
+import usuarios from '@/routes/usuarios';
 import type { NavItem } from '@/types';
 
-const page = usePage();
 const { can } = usePermissions();
 
-const teamSlug = computed(() => {
-    const team = page.props.currentTeam as { slug: string } | null;
-    return team?.slug ?? '';
-});
+const dashboardUrl = dashboard().url;
 
-const dashboardUrl = computed(() =>
-    teamSlug.value ? dashboard(teamSlug.value).url : '/',
-);
+const catalogUrl = catalogo.index().url;
 
-const catalogUrl = computed(() =>
-    teamSlug.value ? `/${teamSlug.value}/catalogo` : '#',
-);
+const webMenuItems: NavItem[] = [
+    {
+        title: 'Carrusel',
+        href: adminWeb.carousel.index().url,
+        icon: Layers,
+        permission: 'web.ver',
+    },
+    {
+        title: 'Galería',
+        href: media.index().url,
+        icon: FolderOpen,
+        permission: 'web.ver',
+    },
+    {
+        title: 'Configuración',
+        href: adminWeb.settings.index().url,
+        icon: SlidersHorizontal,
+        permission: 'web.ver',
+    },
+];
 
 const allNavItems = computed<NavItem[]>(() => [
     {
         title: 'Dashboard',
-        href: dashboardUrl.value,
+        href: dashboardUrl,
         icon: LayoutGrid,
         permission: 'panel.ver',
     },
     {
         title: 'Servicios',
-        href: teamSlug.value ? servicios.index(teamSlug.value).url : '#',
+        href: servicios.index().url,
         icon: Briefcase,
         permission: 'servicios.ver',
     },
     {
         title: 'Clientes',
-        href: teamSlug.value ? clientes.index(teamSlug.value).url : '#',
+        href: clientes.index().url,
         icon: Users,
         permission: 'clientes.ver',
     },
     {
         title: 'Pedidos',
-        href: teamSlug.value ? pedidos.index(teamSlug.value).url : '#',
+        href: pedidos.index().url,
         icon: Package,
         permission: 'pedidos.ver',
     },
     {
+        title: 'Cotizaciones',
+        href: cotizaciones.index().url,
+        icon: FileText,
+        permission: 'cotizaciones.ver',
+    },
+    {
         title: 'Catálogo',
-        href: catalogUrl.value,
+        href: catalogUrl,
         icon: ImageIcon,
-        permission: 'panel.ver',
+        permission: 'catalogo.ver',
     },
     {
         title: 'Diseños',
-        href: '#',
-        icon: Palette,
+        href: portafolio.index().url,
+        icon: FolderKanban,
         permission: 'diseños.ver',
     },
     {
         title: 'Pagos',
-        href: '#',
+        href: pagos.index().url,
         icon: DollarSign,
         permission: 'pagos.ver',
     },
     {
         title: 'Reportes',
-        href: teamSlug.value ? reportes.index(teamSlug.value).url : '#',
+        href: reportes.index().url,
         icon: BarChart3,
         permission: 'reportes.ver',
     },
     {
+        title: 'Sitio web',
+        href: '#',
+        icon: Globe,
+        items: webMenuItems,
+    },
+    {
         title: 'Usuarios',
-        href: teamSlug.value ? usuarios.index(teamSlug.value).url : '#',
+        href: usuarios.index().url,
         icon: Shield,
         permission: 'usuarios.gestionar',
     },
     {
         title: 'Roles',
-        href: teamSlug.value ? roles.index(teamSlug.value).url : '#',
+        href: roles.index().url,
         icon: ShieldCheck,
         permission: 'usuarios.gestionar',
     },
     {
         title: 'Configuración',
-        href: '#',
+        href: configuracion.index().url,
         icon: Settings,
         permission: 'configuracion.ver',
     },
@@ -114,32 +161,55 @@ const allNavItems = computed<NavItem[]>(() => [
 
 const groupMap: Record<string, string[]> = {
     Principal: ['Dashboard'],
-    Gestión: ['Servicios', 'Clientes', 'Pedidos', 'Catálogo', 'Diseños', 'Pagos', 'Reportes'],
+    Gestión: [
+        'Servicios',
+        'Clientes',
+        'Pedidos',
+        'Cotizaciones',
+        'Catálogo',
+        'Diseños',
+        'Reportes',
+    ],
+    Finanzas: ['Pagos'],
+    'Sitio Web': ['Sitio web'],
     Configuración: ['Usuarios', 'Roles', 'Configuración'],
 };
 
+function isItemVisible(item: NavItem): boolean {
+    if (!item.permission || can(item.permission)) {
+        return true;
+    }
+
+    return false;
+}
+
 const navGroups = computed(() => {
-    const visible = allNavItems.value.filter(
-        (item) => !item.permission || can(item.permission),
-    );
     return Object.entries(groupMap)
         .map(([label, titles]) => ({
             label,
-            items: visible.filter((item) => titles.includes(item.title)),
+            items: allNavItems.value
+                .filter((item) => titles.includes(item.title))
+                .map((item) => {
+                    if (item.items && item.items.length) {
+                        const children = item.items.filter(isItemVisible);
+
+                        return children.length
+                            ? { ...item, items: children }
+                            : null;
+                    }
+
+                    return isItemVisible(item) ? item : null;
+                })
+                .filter((item): item is NavItem => item !== null),
         }))
         .filter((group) => group.items.length > 0);
 });
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
+        title: 'hola@creapix.com',
+        href: 'mailto:hola@creapix.com',
+        icon: Mail,
     },
 ];
 </script>
@@ -154,11 +224,6 @@ const footerNavItems: NavItem[] = [
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <TeamSwitcher />
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarHeader>

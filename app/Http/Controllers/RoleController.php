@@ -31,19 +31,21 @@ class RoleController extends Controller
         return Inertia::render('roles/Create');
     }
 
-    public function store(Request $request, string $currentTeam): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:50', Rule::unique(Role::class)],
             'descripcion' => ['nullable', 'string', 'max:255'],
         ]);
 
-        Role::create($validated);
+        $role = Role::create($validated);
 
-        return redirect()->route('roles.index', ['current_team' => $currentTeam]);
+        $role->ensureDefaultPermissions();
+
+        return redirect()->route('roles.index');
     }
 
-    public function edit(string $currentTeam, Role $role): Response
+    public function edit(Role $role): Response
     {
         return Inertia::render('roles/Edit', [
             'role' => [
@@ -54,7 +56,7 @@ class RoleController extends Controller
         ]);
     }
 
-    public function update(Request $request, string $currentTeam, Role $role): RedirectResponse
+    public function update(Request $request, Role $role): RedirectResponse
     {
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:50', Rule::unique(Role::class)->ignore($role->id)],
@@ -63,10 +65,10 @@ class RoleController extends Controller
 
         $role->update($validated);
 
-        return redirect()->route('roles.index', ['current_team' => $currentTeam]);
+        return redirect()->route('roles.index');
     }
 
-    public function destroy(string $currentTeam, Role $role): RedirectResponse
+    public function destroy(Role $role): RedirectResponse
     {
         if (strtolower($role->nombre) === Role::ADMINISTRADOR) {
             return back()->withErrors(['error' => 'No se puede eliminar el rol de administrador.']);
@@ -78,6 +80,6 @@ class RoleController extends Controller
 
         $role->delete();
 
-        return redirect()->route('roles.index', ['current_team' => $currentTeam]);
+        return redirect()->route('roles.index');
     }
 }

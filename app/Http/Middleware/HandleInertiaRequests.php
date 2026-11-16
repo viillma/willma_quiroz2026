@@ -38,7 +38,7 @@ class HandleInertiaRequests extends Middleware
         $user = $request->user();
 
         if ($user) {
-            $user->loadMissing('roles.permissions');
+            $user->loadMissing('role.permissions');
         }
 
         return [
@@ -47,12 +47,12 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $user,
                 'roles' => fn () => $user ? $user->rolesNombres() : [],
+                'roleName' => fn () => $user?->role?->nombre,
                 'permissions' => fn () => $user ? $user->permissionsNombres() : [],
                 'isAdmin' => fn () => $user?->isAdmin() ?? false,
+                'status' => fn () => $user?->status?->value,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            'currentTeam' => fn () => $user?->currentTeam ? $user->toUserTeam($user->currentTeam) : null,
-            'teams' => fn () => $user?->toUserTeams(includeCurrent: true) ?? [],
         ];
     }
 }

@@ -2,29 +2,35 @@
 import { Head, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogTitle,
-} from '@/components/ui/dialog';
-import AppSidebarLayout from '@/layouts/app/AppSidebarLayout.vue';
-import { catalogItems, categorias } from '@/data/catalog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import type { CatalogItem } from '@/data/catalog';
+import AppSidebarLayout from '@/layouts/app/AppSidebarLayout.vue';
 
 defineOptions({
     layout: AppSidebarLayout,
 });
 
-const page = usePage<{ currentTeam: { slug: string } | null }>();
-const currentTeam = computed(() => page.props.currentTeam);
-const teamSlug = computed(() => currentTeam.value?.slug ?? '');
+const page = usePage<{
+    disenos: CatalogItem[];
+    categorias: string[];
+}>();
+
+const catalogItems = computed(
+    () => (page.props.disenos || []) as CatalogItem[],
+);
+const categorias = computed(() => {
+    const cats = (page.props.categorias || []) as string[];
+
+    return ['Todos', ...cats];
+});
 
 const selectedCategory = ref<string>('Todos');
 const searchQuery = ref<string>('');
+const sortBy = ref<string>('orden');
 const selectedItem = ref<CatalogItem | null>(null);
 
 const filteredItems = computed(() => {
-    return catalogItems.filter((item) => {
+    let items = catalogItems.value.filter((item) => {
         const matchesCategory =
             selectedCategory.value === 'Todos' ||
             item.categoria === selectedCategory.value;
@@ -32,11 +38,26 @@ const filteredItems = computed(() => {
             item.nombre
                 .toLowerCase()
                 .includes(searchQuery.value.toLowerCase()) ||
-            item.descripcion
+            (item.descripcion || '')
                 .toLowerCase()
                 .includes(searchQuery.value.toLowerCase());
+
         return matchesCategory && matchesSearch;
     });
+
+    items = [...items].sort((a, b) => {
+        if (sortBy.value === 'precio') {
+            return a.precio - b.precio;
+        }
+
+        if (sortBy.value === 'precio_desc') {
+            return b.precio - a.precio;
+        }
+
+        return (a.orden ?? 0) - (b.orden ?? 0);
+    });
+
+    return items;
 });
 
 function selectCategory(cat: string) {
@@ -62,6 +83,7 @@ function whatsappUrl(item: CatalogItem): string {
     const mensaje = encodeURIComponent(
         `Hola, me interesa este diseño: ${item.nombre}`,
     );
+
     return `https://wa.me/51999999999?text=${mensaje}`;
 }
 </script>
@@ -72,7 +94,7 @@ function whatsappUrl(item: CatalogItem): string {
     <div class="animate-fade-in space-y-8 p-4 md:p-6 lg:p-8">
         <!-- Hero Section -->
         <div
-            class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600/20 via-blue-600/15 to-pink-600/20 p-8 md:p-12 ring-1 ring-white/10"
+            class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600/20 via-blue-600/15 to-pink-600/20 p-8 md:p-12"
         >
             <div
                 class="absolute -top-20 -right-20 h-72 w-72 animate-pulse rounded-full bg-purple-500/20 blur-3xl"
@@ -83,17 +105,17 @@ function whatsappUrl(item: CatalogItem): string {
                 style="animation-duration: 8s; animation-delay: 2s"
             />
             <div
-                class="absolute left-1/3 top-1/2 h-48 w-48 animate-pulse rounded-full bg-blue-500/10 blur-3xl"
+                class="absolute top-1/2 left-1/3 h-48 w-48 animate-pulse rounded-full bg-blue-500/10 blur-3xl"
                 style="animation-duration: 7s; animation-delay: 1s"
             />
 
             <div class="relative z-10">
-                <div class="flex items-center gap-3 mb-4">
+                <div class="mb-4 flex items-center gap-3">
                     <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 ring-1 ring-white/10"
+                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30"
                     >
                         <svg
-                            class="h-5 w-5 text-purple-300"
+                            class="h-5 w-5 text-purple-600"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                             fill="none"
@@ -108,26 +130,26 @@ function whatsappUrl(item: CatalogItem): string {
                         </svg>
                     </div>
                     <span
-                        class="rounded-full bg-purple-500/10 px-3 py-1 text-xs font-medium text-purple-300 ring-1 ring-purple-500/20"
+                        class="rounded-full bg-purple-500/10 px-3 py-1 text-xs font-medium text-purple-600 ring-1 ring-purple-500/20"
                     >
                         Portafolio
                     </span>
                 </div>
 
                 <h1
-                    class="text-3xl font-bold tracking-tight text-white md:text-4xl lg:text-5xl"
+                    class="text-3xl font-bold tracking-tight text-ink md:text-4xl lg:text-5xl"
                 >
                     Catálogo de
                     <span
-                        class="bg-gradient-to-r from-purple-400 via-blue-400 to-pink-400 bg-clip-text text-transparent"
+                        class="bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 bg-clip-text text-transparent"
                     >
-                        Diseños
+                        Diseños CREAPIX
                     </span>
                 </h1>
-                <p class="mt-3 max-w-2xl text-base text-white/60 md:text-lg">
-                    Explora nuestra galería de trabajos profesionales.
-                    Cada pieza es diseñada con pasión y atención al detalle
-                    para ofrecer resultados excepcionales.
+                <p class="mt-3 max-w-2xl text-base text-ink/60 md:text-lg">
+                    Explora nuestra galería de trabajos profesionales. Cada
+                    pieza es diseñada con pasión y atención al detalle para
+                    ofrecer resultados excepcionales.
                 </p>
             </div>
         </div>
@@ -137,7 +159,7 @@ function whatsappUrl(item: CatalogItem): string {
             <!-- Search Bar -->
             <div class="relative">
                 <svg
-                    class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40"
+                    class="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-ink/40"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="none"
@@ -151,7 +173,7 @@ function whatsappUrl(item: CatalogItem): string {
                     v-model="searchQuery"
                     type="text"
                     placeholder="Buscar diseños..."
-                    class="h-12 w-full rounded-2xl border border-white/10 bg-white/5 pl-11 pr-4 text-sm text-white placeholder:text-white/30 backdrop-blur-sm transition-all duration-300 focus:border-purple-500/40 focus:outline-none focus:ring-2 focus:ring-purple-500/15"
+                    class="h-12 w-full rounded-2xl border border-ink/10 bg-ink/[0.03] pr-4 pl-11 text-sm text-ink backdrop-blur-sm transition-all duration-300 placeholder:text-ink/30 focus:border-purple-500/40 focus:ring-2 focus:ring-purple-500/15 focus:outline-none"
                 />
             </div>
 
@@ -164,8 +186,8 @@ function whatsappUrl(item: CatalogItem): string {
                     class="rounded-full px-4 py-2 text-xs font-medium transition-all duration-300"
                     :class="
                         selectedCategory === cat
-                            ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25 scale-105'
-                            : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80 ring-1 ring-white/10'
+                            ? 'scale-105 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25'
+                            : 'bg-ink/[0.03] text-ink/60 ring-1 ring-ink/5 hover:bg-blush/40 hover:text-ink/80'
                     "
                 >
                     {{ cat }}
@@ -174,18 +196,29 @@ function whatsappUrl(item: CatalogItem): string {
         </div>
 
         <!-- Results Count -->
-        <div class="flex items-center justify-between">
-            <p class="text-sm text-white/50">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm text-ink/50">
                 Mostrando
-                <span class="font-medium text-white/80">{{
+                <span class="font-medium text-ink/80">{{
                     filteredItems.length
                 }}</span>
                 de
-                <span class="font-medium text-white/80">{{
+                <span class="font-medium text-ink/80">{{
                     catalogItems.length
                 }}</span>
                 diseños
             </p>
+            <div class="flex items-center gap-2">
+                <label class="text-xs text-ink/50">Ordenar:</label>
+                <select
+                    v-model="sortBy"
+                    class="h-9 rounded-xl border border-ink/10 bg-ink/[0.03] px-3 text-xs text-ink/70 focus:border-purple-500/40 focus:ring-2 focus:ring-purple-500/15 focus:outline-none"
+                >
+                    <option value="orden">Orden de aparición</option>
+                    <option value="precio">Precio: menor a mayor</option>
+                    <option value="precio_desc">Precio: mayor a menor</option>
+                </select>
+            </div>
         </div>
 
         <!-- Card Grid -->
@@ -202,7 +235,7 @@ function whatsappUrl(item: CatalogItem): string {
                 <!-- Image Container -->
                 <div class="relative aspect-[3/2] overflow-hidden rounded-2xl">
                     <img
-                        :src="item.imagen"
+                        :src="item.imagen ?? undefined"
                         :alt="item.nombre"
                         loading="lazy"
                         class="h-full w-full object-cover transition-all duration-700 group-hover/card:scale-110"
@@ -214,14 +247,14 @@ function whatsappUrl(item: CatalogItem): string {
 
                     <!-- Category Badge -->
                     <span
-                        class="absolute left-3 top-3 rounded-full bg-black/40 px-3 py-1 text-[10px] font-medium text-white/90 backdrop-blur-md ring-1 ring-white/10"
+                        class="absolute top-3 left-3 rounded-full bg-black/40 px-3 py-1 text-[10px] font-medium text-white/90 ring-1 ring-white/10 backdrop-blur-md"
                     >
                         {{ item.categoria }}
                     </span>
 
                     <!-- Price Badge on Image -->
                     <span
-                        class="absolute bottom-3 right-3 rounded-xl bg-gradient-to-r from-purple-600/90 to-pink-600/90 px-3 py-1.5 text-sm font-bold text-white shadow-lg shadow-purple-500/30 backdrop-blur-md opacity-0 translate-y-2 transition-all duration-500 group-hover/card:opacity-100 group-hover/card:translate-y-0"
+                        class="absolute right-3 bottom-3 translate-y-2 rounded-xl bg-gradient-to-r from-purple-600/90 to-pink-600/90 px-3 py-1.5 text-sm font-bold text-white opacity-0 shadow-lg shadow-purple-500/30 backdrop-blur-md transition-all duration-500 group-hover/card:translate-y-0 group-hover/card:opacity-100"
                     >
                         S/ {{ item.precio.toFixed(2) }}
                     </span>
@@ -230,20 +263,35 @@ function whatsappUrl(item: CatalogItem): string {
                 <!-- Card Body -->
                 <div class="mt-4 space-y-2.5">
                     <h3
-                        class="text-base font-semibold text-white transition-colors duration-300 group-hover/card:text-transparent group-hover/card:bg-clip-text group-hover/card:bg-gradient-to-r group-hover/card:from-purple-300 group-hover/card:to-pink-300"
+                        class="text-base font-bold text-ink transition-colors duration-300 group-hover/card:bg-gradient-to-r group-hover/card:from-purple-600 group-hover/card:to-pink-600 group-hover/card:bg-clip-text group-hover/card:text-transparent"
                     >
                         {{ item.nombre }}
                     </h3>
 
-                    <p class="line-clamp-2 text-sm leading-relaxed text-white/50">
-                        {{ item.descripcion }}
+                    <p class="line-clamp-2 text-sm leading-relaxed text-ink/50">
+                        {{
+                            item.descripcion ||
+                            'Diseño sin descripción disponible'
+                        }}
                     </p>
+
+                    <div class="flex items-center gap-2 pt-0.5">
+                        <span class="text-lg font-bold text-ink"
+                            >S/ {{ item.precio.toFixed(2) }}</span
+                        >
+                        <span
+                            v-if="item.precio_anterior"
+                            class="text-sm text-ink/40 line-through"
+                        >
+                            S/ {{ Number(item.precio_anterior).toFixed(2) }}
+                        </span>
+                    </div>
 
                     <div class="flex items-center gap-2 pt-0.5">
                         <Button
                             variant="outline"
                             size="sm"
-                            class="h-9 flex-1 rounded-xl border-white/10 text-xs font-medium text-white/70 transition-all duration-300 hover:border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-300"
+                            class="h-9 flex-1 rounded-xl border-ink/10 text-xs font-medium text-ink/70 transition-all duration-300 hover:border-pix/30 hover:bg-purple-500/10 hover:text-purple-300"
                             @click="openModal(item)"
                         >
                             <svg
@@ -254,7 +302,9 @@ function whatsappUrl(item: CatalogItem): string {
                                 stroke="currentColor"
                                 stroke-width="2"
                             >
-                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                <path
+                                    d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"
+                                />
                                 <circle cx="12" cy="12" r="3" />
                             </svg>
                             Ver Diseño
@@ -284,10 +334,10 @@ function whatsappUrl(item: CatalogItem): string {
         <!-- Empty State -->
         <div
             v-else
-            class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/[0.02] px-6 py-16 text-center"
+            class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-ink/10 bg-ink/[0.02] px-6 py-16 text-center"
         >
             <svg
-                class="mb-4 h-12 w-12 text-white/20"
+                class="mb-4 h-12 w-12 text-ink/30"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="none"
@@ -297,10 +347,10 @@ function whatsappUrl(item: CatalogItem): string {
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.3-4.3" />
             </svg>
-            <p class="text-sm font-medium text-white/40">
+            <p class="text-sm font-medium text-ink/40">
                 No se encontraron diseños
             </p>
-            <p class="mt-1 text-xs text-white/30">
+            <p class="mt-1 text-xs text-ink/30">
                 Intenta con otros términos de búsqueda o categoría
             </p>
         </div>
@@ -308,7 +358,11 @@ function whatsappUrl(item: CatalogItem): string {
         <!-- Preview Modal -->
         <Dialog
             :open="selectedItem !== null"
-            @update:open="(val: boolean) => { if (!val) closeModal() }"
+            @update:open="
+                (val: boolean) => {
+                    if (!val) closeModal();
+                }
+            "
         >
             <DialogContent
                 class="max-w-4xl border-white/10 bg-[#0a0f24]/95 p-0 backdrop-blur-xl"
@@ -323,7 +377,7 @@ function whatsappUrl(item: CatalogItem): string {
                         class="relative aspect-[4/3] md:col-span-3 md:aspect-auto"
                     >
                         <img
-                            :src="selectedItem.imagen"
+                            :src="selectedItem.imagen ?? undefined"
                             :alt="selectedItem.nombre"
                             class="h-full w-full object-cover"
                         />
@@ -331,7 +385,7 @@ function whatsappUrl(item: CatalogItem): string {
                             class="absolute inset-0 bg-gradient-to-r from-transparent to-[#0a0f24]/40"
                         />
                         <span
-                            class="absolute left-4 top-4 rounded-full bg-black/50 px-3 py-1 text-[11px] font-medium text-white/90 backdrop-blur-md ring-1 ring-white/10"
+                            class="absolute top-4 left-4 rounded-full bg-black/50 px-3 py-1 text-[11px] font-medium text-white/90 ring-1 ring-white/10 backdrop-blur-md"
                         >
                             {{ selectedItem.categoria }}
                         </span>
@@ -349,16 +403,19 @@ function whatsappUrl(item: CatalogItem): string {
                             </DialogTitle>
                         </div>
 
-                        <p class="leading-relaxed text-white/60 text-sm">
-                            {{ selectedItem.descripcion }}
+                        <p class="text-sm leading-relaxed text-white/60">
+                            {{
+                                selectedItem.descripcion ||
+                                'Diseño sin descripción disponible'
+                            }}
                         </p>
 
                         <div
-                            class="flex items-baseline gap-2 rounded-2xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 px-5 py-4 ring-1 ring-white/5"
+                            class="flex items-baseline gap-2 rounded-2xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 px-5 py-4"
                         >
                             <span class="text-sm text-white/40">Precio:</span>
                             <span
-                                class="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
+                                class="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-3xl font-bold text-transparent"
                             >
                                 S/ {{ selectedItem.precio.toFixed(2) }}
                             </span>
@@ -382,7 +439,7 @@ function whatsappUrl(item: CatalogItem): string {
                             Solicitar por WhatsApp
                         </a>
 
-                        <p class="text-[11px] text-white/30 text-center">
+                        <p class="text-center text-[11px] text-white/30">
                             Al hacer clic se abrirá WhatsApp con el mensaje
                             listo
                         </p>

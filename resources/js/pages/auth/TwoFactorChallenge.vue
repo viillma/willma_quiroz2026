@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Form, Head, setLayoutProps } from '@inertiajs/vue3';
-import { computed, ref, watchEffect } from 'vue';
 import { KeyRound, ShieldAlert } from 'lucide-vue-next';
+import { computed, ref, watchEffect } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,11 +55,23 @@ const code = ref<string>('');
     <div class="animate-fade-in space-y-6">
         <!-- Title -->
         <div class="animate-slide-up text-center">
-            <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-pink-500 shadow-lg shadow-pink-500/25">
-                <KeyRound class="h-6 w-6 text-white" />
+            <div
+                class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-lilac to-blush text-[#6d5bd0] shadow-lg shadow-lilac/50"
+            >
+                <KeyRound class="h-6 w-6" />
             </div>
-            <h1 class="text-2xl font-bold text-white">{{ authConfigContent.title }}</h1>
-            <p class="mt-2 text-sm text-white/60">{{ authConfigContent.description }}</p>
+            <span
+                class="text-[11px] font-bold tracking-[0.2em] text-pix uppercase"
+                >Verificación en dos pasos</span
+            >
+            <h1
+                class="mt-3 font-display text-3xl font-extrabold tracking-tight text-ink"
+            >
+                {{ authConfigContent.title }}
+            </h1>
+            <p class="mt-2 text-sm text-ink/55">
+                {{ authConfigContent.description }}
+            </p>
         </div>
 
         <div class="space-y-6">
@@ -72,7 +84,9 @@ const code = ref<string>('');
                     #default="{ errors, processing, clearErrors }"
                 >
                     <input type="hidden" name="code" :value="code" />
-                    <div class="flex flex-col items-center justify-center space-y-3 text-center">
+                    <div
+                        class="flex flex-col items-center justify-center space-y-3 text-center"
+                    >
                         <div class="flex w-full items-center justify-center">
                             <InputOTP
                                 id="otp"
@@ -80,7 +94,7 @@ const code = ref<string>('');
                                 :maxlength="6"
                                 :disabled="processing"
                                 autofocus
-                                class="[&>*]:bg-white/5 [&>*]:border-white/10 [&>*]:text-white"
+                                class="[&>*]:border-ink/10 [&>*]:bg-warm [&>*]:text-ink [&>*]:focus:border-pix/50"
                             >
                                 <InputOTPGroup>
                                     <InputOTPSlot
@@ -96,7 +110,7 @@ const code = ref<string>('');
 
                     <Button
                         type="submit"
-                        class="btn-gradient-blue btn-shimmer w-full h-12 text-base font-semibold"
+                        class="h-12 w-full rounded-xl bg-pix font-bold text-white shadow-lg shadow-pix/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-pix-2 hover:shadow-xl hover:shadow-pix/30"
                         :disabled="processing || code.length < 6"
                     >
                         <span class="flex items-center justify-center gap-2">
@@ -104,11 +118,11 @@ const code = ref<string>('');
                         </span>
                     </Button>
 
-                    <div class="text-center text-sm text-white/60">
+                    <div class="text-center text-sm text-ink/55">
                         <span>o </span>
                         <button
                             type="button"
-                            class="font-medium text-blue-400 hover:text-purple-400 transition-colors underline underline-offset-2"
+                            class="font-bold text-pix underline underline-offset-2 transition-colors hover:text-pix-2"
                             @click="() => toggleRecoveryMode(clearErrors)"
                         >
                             {{ authConfigContent.buttonText }}
@@ -125,12 +139,17 @@ const code = ref<string>('');
                     #default="{ errors, processing, clearErrors }"
                 >
                     <div class="space-y-2">
-                        <label for="recovery_code" class="text-sm font-medium text-white/80">
+                        <label
+                            for="recovery_code"
+                            class="text-sm font-semibold text-ink/80"
+                        >
                             Código de recuperación
                         </label>
                         <div class="relative">
-                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                                <ShieldAlert class="h-4 w-4 text-white/40" />
+                            <div
+                                class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5"
+                            >
+                                <ShieldAlert class="h-4 w-4 text-ink/35" />
                             </div>
                             <Input
                                 id="recovery_code"
@@ -139,7 +158,7 @@ const code = ref<string>('');
                                 placeholder="Ingresa tu código de recuperación"
                                 :autofocus="showRecoveryInput"
                                 required
-                                class="pl-10 h-11 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-white/40 transition-all duration-200 focus:bg-white/10 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+                                class="h-11 rounded-xl border-ink/10 bg-warm pl-10 text-ink transition-all duration-200 placeholder:text-ink/35 focus:border-pix/40 focus:bg-white focus:ring-pix/20"
                             />
                         </div>
                         <InputError :message="errors.recovery_code" />
@@ -147,7 +166,7 @@ const code = ref<string>('');
 
                     <Button
                         type="submit"
-                        class="btn-gradient-blue btn-shimmer w-full h-12 text-base font-semibold"
+                        class="h-12 w-full rounded-xl bg-pix font-bold text-white shadow-lg shadow-pix/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-pix-2 hover:shadow-xl hover:shadow-pix/30"
                         :disabled="processing"
                     >
                         <span class="flex items-center justify-center gap-2">
@@ -155,11 +174,11 @@ const code = ref<string>('');
                         </span>
                     </Button>
 
-                    <div class="text-center text-sm text-white/60">
+                    <div class="text-center text-sm text-ink/55">
                         <span>o </span>
                         <button
                             type="button"
-                            class="font-medium text-blue-400 hover:text-purple-400 transition-colors underline underline-offset-2"
+                            class="font-bold text-pix underline underline-offset-2 transition-colors hover:text-pix-2"
                             @click="() => toggleRecoveryMode(clearErrors)"
                         >
                             {{ authConfigContent.buttonText }}

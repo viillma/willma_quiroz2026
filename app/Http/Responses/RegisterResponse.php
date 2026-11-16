@@ -3,26 +3,27 @@
 namespace App\Http\Responses;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
-use Laravel\Fortify\Fortify;
 use Symfony\Component\HttpFoundation\Response;
 
 class RegisterResponse implements RegisterResponseContract
 {
+    /**
+     * Newly registered users start as "pendiente" and need an admin to approve them,
+     * so we log them out and send them back to the login screen with a notice.
+     */
     public function toResponse($request): Response
     {
-        $user = $request->user();
-        $team = $user?->currentTeam ?? $user?->personalTeam();
+        $message = 'Tu cuenta fue creada y está pendiente de aprobación por un administrador.';
 
-        if (! $team) {
-            abort(403);
-        }
+        Auth::guard('web')->logout();
 
-        URL::defaults(['current_team' => $team->slug]);
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return $request->wantsJson()
-            ? new JsonResponse(['two_factor' => false], 201)
-            : redirect()->intended("/{$team->slug}".Fortify::redirects('register'));
+            ? new JsonResponse(['message' => $message], 201)
+            : redirect()->route('login')->with('status', $message);
     }
 }

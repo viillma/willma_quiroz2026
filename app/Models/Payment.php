@@ -11,6 +11,7 @@ class Payment extends Model
         'order_id',
         'amount',
         'payment_method',
+        'tipo_pago',
         'status',
         'reference',
         'confirmed_by',
@@ -19,10 +20,7 @@ class Payment extends Model
 
     protected function casts(): array
     {
-        return [
-            'amount' => 'decimal:2',
-            'confirmed_at' => 'datetime',
-        ];
+        return ['amount' => 'decimal:2', 'confirmed_at' => 'datetime'];
     }
 
     public function order(): BelongsTo
