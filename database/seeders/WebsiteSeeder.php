@@ -15,47 +15,47 @@ class WebsiteSeeder extends Seeder
                 [
                     'titulo' => 'DISEÑO DE LOGOTIPOS',
                     'descripcion' => 'Creamos identidades visuales únicas para tu marca.',
-                    'imagen' => 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1600&q=85&auto=format&fit=crop',
+                    'imagen' => 'logotipos.jpg',
                 ],
                 [
                     'titulo' => 'BANNERS PUBLICITARIOS',
                     'descripcion' => 'Diseños impactantes para hacer crecer tu negocio.',
-                    'imagen' => 'https://images.unsplash.com/photo-1770017863955-56a1501a3c93?w=1600&q=85&auto=format&fit=crop',
-                ],
-                [
-                    'titulo' => 'TARJETAS DE PRESENTACIÓN',
-                    'descripcion' => 'Una primera impresión profesional para tu marca.',
-                    'imagen' => 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=1600&q=85&auto=format&fit=crop',
+                    'imagen' => 'banners-publicitarios.jpg',
                 ],
                 [
                     'titulo' => 'TARJETAS DE INVITACIÓN',
                     'descripcion' => 'Diseños personalizados para momentos especiales.',
-                    'imagen' => 'https://images.unsplash.com/photo-1742581659446-6260fc707e7d?w=1600&q=85&auto=format&fit=crop',
+                    'imagen' => 'tarjetas-invitacion.jpg',
                 ],
                 [
-                    'titulo' => 'EDICIÓN DE FOTOS',
+                    'titulo' => 'EDICIÓN DE FOTOGRAFÍAS',
                     'descripcion' => 'Transformamos tus imágenes con acabado profesional.',
-                    'imagen' => 'https://images.unsplash.com/photo-1744948961024-66baaafbb5dc?w=1600&q=85&auto=format&fit=crop',
+                    'imagen' => 'edicion-fotografias.jpg',
                 ],
                 [
-                    'titulo' => 'RESTAURACIÓN DE FOTOS',
-                    'descripcion' => 'Recuperamos recuerdos que parecían perdidos.',
-                    'imagen' => 'https://images.unsplash.com/photo-1695921957609-42b27aee3285?w=1600&q=85&auto=format&fit=crop',
+                    'titulo' => 'AFICHES PUBLICITARIOS',
+                    'descripcion' => 'Diseño de afiches y flyers publicitarios para impresión y redes sociales.',
+                    'imagen' => 'afiches-publicitarios.jpg',
                 ],
                 [
-                    'titulo' => 'EDICIÓN DE VIDEOS',
-                    'descripcion' => 'Convertimos tus videos en historias profesionales.',
-                    'imagen' => 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1600&q=85&auto=format&fit=crop',
+                    'titulo' => 'REPARACIÓN DE FOTOS',
+                    'descripcion' => 'Restauramos recuerdos que parecían perdidos.',
+                    'imagen' => 'reparacion-fotos.jpg',
+                ],
+                [
+                    'titulo' => 'FOTOGRAFÍA PROFESIONAL',
+                    'descripcion' => 'Sesiones fotográficas profesionales para productos, retratos y eventos.',
+                    'imagen' => 'fotografia-profesional.jpg',
                 ],
                 [
                     'titulo' => 'FILMACIÓN PROFESIONAL',
                     'descripcion' => 'Capturamos momentos con calidad cinematográfica.',
-                    'imagen' => 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=1600&q=85&auto=format&fit=crop',
+                    'imagen' => 'filmacion-profesional.jpg',
                 ],
                 [
                     'titulo' => 'SESIONES DE FOTOS',
                     'descripcion' => 'Momentos únicos capturados profesionalmente.',
-                    'imagen' => 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1600&q=85&auto=format&fit=crop',
+                    'imagen' => 'sesiones-fotos.jpg',
                 ],
             ];
 

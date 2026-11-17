@@ -32,7 +32,7 @@ class CatalogoSeeder extends Seeder
         ];
 
         $imagenes = [
-            'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=600&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop',
             'https://images.unsplash.com/photo-1586339949916-3e5457d58f4c?w=600&h=400&fit=crop',
             'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=600&h=400&fit=crop',
             'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600&h=400&fit=crop',

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ContactLeadRequest;
 use App\Models\BusinessSetting;
 use App\Models\CatalogoDiseno;
+use App\Models\CarouselSlide;
 use App\Models\ConfiguracionWeb;
 use App\Models\ContactLead;
 use App\Models\Faq;
@@ -52,21 +53,19 @@ class PublicController extends Controller
 
     private function construirCarouselDesdeServicios(): array
     {
-        $servicios = Servicio::publicados()->activos()
+        $slides = CarouselSlide::activos()
             ->orderBy('orden')
-            ->take(8)
-            ->get();
-
-        $slides = $servicios->map(fn ($s) => (object) [
-            'id' => $s->id,
-            'titulo' => $s->nombre,
-            'descripcion' => $s->descripcion,
-            'boton_texto' => 'Solicitar servicio',
-            'boton_enlace' => '#',
-            'imagen' => $s->imagen_url,
-            'imagen_url' => $s->imagen_url,
-            'duracion' => 5000,
-        ]);
+            ->get()
+            ->map(fn ($s) => (object) [
+                'id' => $s->id,
+                'titulo' => $s->titulo,
+                'descripcion' => $s->descripcion,
+                'boton_texto' => $s->boton_texto ?? 'Solicitar servicio',
+                'boton_enlace' => $s->boton_enlace ?? '#',
+                'imagen' => $s->imagen_url,
+                'imagen_url' => $s->imagen_url,
+                'duracion' => $s->duracion ?? 5000,
+            ]);
 
         return $slides->toArray();
     }

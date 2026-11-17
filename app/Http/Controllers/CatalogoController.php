@@ -113,6 +113,8 @@ class CatalogoController extends Controller
                 Storage::disk('public')->delete($catalogoDiseno->imagen);
             }
             $data['imagen'] = $request->file('imagen')->store('catalogo', 'public');
+        } elseif (! $request->filled('imagen')) {
+            $data['imagen'] = $catalogoDiseno->imagen;
         }
 
         $catalogoDiseno->update($data);

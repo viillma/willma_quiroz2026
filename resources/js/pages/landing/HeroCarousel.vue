@@ -135,78 +135,68 @@ onBeforeUnmount(() => {
             <div
                 v-if="activeSlide"
                 :key="activeSlide.id"
-                class="absolute inset-0"
-                @mouseenter="paused = true"
-                @mouseleave="paused = false"
-                @touchstart="paused = true"
-                @touchend="paused = false"
+                class="relative h-full w-full flex items-center justify-center lg:flex-row"
             >
-                <img
-                    :src="activeSlide.imagen_url || ''"
-                    :alt="activeSlide.titulo"
-                    class="hero-img absolute inset-0 h-full w-full object-cover"
-                    loading="eager"
-                    :style="{ animationDuration: slideDuration + 'ms' }"
-                />
-
-                <!-- Overlays for readability -->
-                <div class="hero-vignette absolute inset-0"></div>
+                <!-- Image side -->
                 <div
-                    class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/20"
-                ></div>
-                <div
-                    class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-transparent"
-                ></div>
-
-                <div
-                    class="absolute inset-0 flex items-center px-6 sm:px-10 lg:px-20"
+                    v-if="activeSlide.imagen_url"
+                    class="lg:w-1/2 w-full lg:relative lg:h-full lg:object-cover lg:transition-opacity duration-500"
                 >
-                    <div class="hero-carousel-content max-w-2xl lg:max-w-3xl">
-                        <slot v-if="$slots.hero" name="hero" />
+                    <img
+                        :src="activeSlide.imagen_url"
+                        :alt="activeSlide.titulo + ', servicio CREAPIX'"
+                        class="lg:h-full w-full object-cover transition-opacity"
+                        loading="eager"
+                        :style="{ animationDuration: slideDuration + 'ms' }"
+                    />
+                    <!-- Mobile-only overlay -->
+                    <div
+                        class="absolute inset-0 lg:hidden bg-black/60"
+                    ></div>
+                </div>
 
-                        <template v-else>
-                            <span
-                                class="mb-6 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 backdrop-blur-md"
-                            >
-                                <span
-                                    class="h-2 w-2 rounded-full bg-pix-2"
-                                ></span>
-                                <span
-                                    class="font-display text-xs font-extrabold tracking-widest text-white uppercase"
-                                    >Nuestro estudio</span
-                                >
-                            </span>
+                <!-- Text side -->
+                <div
+                    class="lg:w-1/2 w-full lg:p-20 lg:pr-12 flex flex-col justify-center gap-6 lg:pl-12 hero-carousel-content"
+                >
+                    <span
+                        class="mb-6 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 backdrop-blur-md text-white"
+                    >
+                        <span class="h-2 w-2 rounded-full bg-pix-2"></span>
+                        <span
+                            class="font-display text-xs font-extrabold tracking-widest text-white uppercase"
+                        >CREAPIX</span
+                        >
+                    </span>
 
-                            <h1
-                                class="font-display text-4xl leading-[1.05] font-extrabold tracking-tight text-white drop-shadow-lg sm:text-5xl lg:text-7xl"
-                            >
-                                {{ activeSlide.titulo }}
-                            </h1>
+                    <h1
+                        class="font-display text-4xl leading-[1.05] font-extrabold tracking-tight text-white drop-shadow-lg sm:text-5xl lg:text-7xl"
+                    >
+                        {{ activeSlide.titulo }}
+                    </h1>
 
-                            <p
-                                v-if="activeSlide.descripcion"
-                                class="mt-6 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg lg:text-xl"
-                            >
-                                {{ activeSlide.descripcion }}
-                            </p>
+                    <p
+                        v-if="activeSlide.descripcion"
+                        class="mt-6 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg lg:text-xl"
+                    >
+                        {{ activeSlide.descripcion }}
+                    </p>
 
-                            <a
-                                :href="activeSlide.boton_enlace || '#servicios'"
-                                class="group mt-9 inline-flex items-center gap-2 rounded-full bg-pix px-8 py-4 text-sm font-bold text-white shadow-lg shadow-pix/40 transition-all duration-300 hover:-translate-y-0.5 hover:bg-pix-2"
-                                @click.prevent="
-                                    goToHash(activeSlide.boton_enlace)
-                                "
-                            >
-                                {{
-                                    activeSlide.boton_texto ||
-                                    'Explorar servicios'
-                                }}
-                                <ArrowRight
-                                    class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-                                />
-                            </a>
-                        </template>
-                    </div>
+                    <a
+                        :href="activeSlide.boton_enlace || '#servicios'"
+                        class="mt-9 inline-flex items-center gap-2 rounded-full bg-pix px-8 py-4 text-sm font-bold text-white shadow-lg shadow-pix/40 transition-all duration-300 hover:-translate-y-0.5 hover:bg-pix-2"
+                        @click.prevent="
+                            goToHash(activeSlide.boton_enlace)
+                        "
+                    >
+                        {{
+                            activeSlide.boton_texto ||
+                            'Solicitar servicio'
+                        }}
+                        <ArrowRight
+                            class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                        />
+                    </a>
                 </div>
             </div>
         </Transition>
@@ -342,6 +332,13 @@ onBeforeUnmount(() => {
     }
     to {
         width: 0%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-progress {
+        animation: none;
+        width: 100%;
     }
 }
 </style>
